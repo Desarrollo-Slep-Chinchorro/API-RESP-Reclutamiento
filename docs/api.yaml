@@ -5,7 +5,7 @@ info:
   description: API REST para la gestión de reclutamiento.
 
 servers:
-  - url: http://localhost:3000/api
+  - url: http://localhost:8000/api
     description: Servidor local
 
 tags:

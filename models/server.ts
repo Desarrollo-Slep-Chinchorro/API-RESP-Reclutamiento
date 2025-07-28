@@ -25,6 +25,11 @@ class Server {
   private app: Application;
   private port: number;
   private swaggerDocument = YAML.load("docs/api.yaml");
+  /*   private swaggerDocument = YAML.load(
+    path.resolve(__dirname, "../docs/api.yaml")
+  ); */
+
+  // Define API paths
   private apiPath = {
     cargos: "/api/cargos",
     candidato: "/api/candidatos",
@@ -47,6 +52,7 @@ class Server {
     this.bdConnection();
     this.middlewares();
     this.routes();
+    this.initializeErrorHandling();
   }
 
   private routes() {
@@ -62,11 +68,6 @@ class Server {
     this.app.use(this.apiPath.region, RegionRoutes);
     this.app.use(this.apiPath.estadoCivil, EstadoCivilRoutes);
     this.app.use(this.apiPath.tituloProfesional, TituloProfesionalRoutes);
-    this.app.use(
-      this.apiPath.doc,
-      swaggerUi.serve,
-      swaggerUi.setup(this.swaggerDocument)
-    );
   }
 
   async bdConnection() {
@@ -83,8 +84,35 @@ class Server {
     this.app.use(cors());
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use("/public", express.static(path.join(__dirname, "../public")));
     this.app.use(helmet());
+    // Static folders
+    this.app.use("/public", express.static(path.join(__dirname, "../public")));
+    this.app.use(
+      "/uploads",
+      express.static(path.join(__dirname, "../uploads"))
+    );
+    // Swagger docs
+    this.app.use(
+      "/api/docs",
+      swaggerUi.serve,
+      swaggerUi.setup(this.swaggerDocument)
+    );
+  }
+
+  private initializeErrorHandling() {
+    // 404 Not Found
+    this.app.use((req: Request, res: Response) => {
+      res.status(404).json({ message: "Endpoint no encontrado" });
+    });
+    // Global Error Handler
+    this.app.use(
+      (err: any, _req: Request, res: Response, _next: NextFunction) => {
+        console.error(err.stack);
+        res
+          .status(err.status || 500)
+          .json({ message: err.message || "Error interno del servidor" });
+      }
+    );
   }
 
   listener() {
