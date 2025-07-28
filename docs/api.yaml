@@ -3,18 +3,49 @@ info:
   title: API Reclutamiento
   version: 1.0.0
   description: API REST para la gestión de reclutamiento.
+
 servers:
   - url: http://localhost:3000/api
     description: Servidor local
 
+tags:
+  - name: Candidatos
+    description: Operaciones sobre candidatos.
+  - name: Candidatos_Cargos
+    description: Relaciones entre candidatos y cargos.
+  - name: Cargos
+    description: Operaciones sobre cargos.
+  - name: Comentarios
+    description: Operaciones sobre comentarios.
+  - name: Comunas
+    description: Operaciones sobre comunas.
+  - name: Documentos
+    description: Operaciones sobre documentos.
+  - name: Documentos_Candidatos
+    description: Relaciones entre documentos y candidatos.
+  - name: Estado_Candidatos
+    description: Estados posibles de los candidatos.
+  - name: Estados_Civiles
+    description: Estados civiles disponibles.
+  - name: Nacionalidades
+    description: Operaciones sobre nacionalidades.
+  - name: Regiones
+    description: Operaciones sobre regiones.
+  - name: Titulos_Profesionales
+    description: Operaciones sobre títulos profesionales.
+
 paths:
   /candidatos:
     get:
+      tags:
+        - Candidatos
       summary: Listar todos los candidatos
       responses:
         "200":
           description: Lista de candidatos
     post:
+      tags:
+        - Candidatos
       summary: Crear un candidato
       requestBody:
         required: true
@@ -64,11 +95,15 @@ paths:
         schema:
           type: integer
     get:
+      tags:
+        - Candidatos
       summary: Obtener un candidato por ID
       responses:
         "200":
           description: Candidato encontrado
     put:
+      tags:
+        - Candidatos
       summary: Actualizar un candidato
       requestBody:
         required: true
@@ -101,6 +136,8 @@ paths:
         "200":
           description: Candidato actualizado
     delete:
+      tags:
+        - Candidatos
       summary: Eliminar un candidato
       responses:
         "200":
@@ -108,12 +145,16 @@ paths:
 
   /candidatos_cargos:
     get:
-      summary: Listar todas las relaciones candidato–cargo
+      tags:
+        - Candidatos_Cargos
+      summary: Listar relaciones candidato–cargo
       responses:
         "200":
           description: Lista de relaciones
     post:
-      summary: Asignar un cargo a un candidato
+      tags:
+        - Candidatos_Cargos
+      summary: Crear relación candidato–cargo
       requestBody:
         required: true
         content:
@@ -145,24 +186,32 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener relación específica candidato–cargo
+      tags:
+        - Candidatos_Cargos
+      summary: Obtener relación específica
       responses:
         "200":
           description: Relación encontrada
     delete:
-      summary: Eliminar relación candidato–cargo
+      tags:
+        - Candidatos_Cargos
+      summary: Eliminar relación
       responses:
         "200":
           description: Relación eliminada
 
   /cargos:
     get:
-      summary: Listar todos los cargos
+      tags:
+        - Cargos
+      summary: Listar cargos
       responses:
         "200":
           description: Lista de cargos
     post:
-      summary: Crear un cargo
+      tags:
+        - Cargos
+      summary: Crear cargo
       requestBody:
         required: true
         content:
@@ -186,12 +235,16 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener un cargo por ID
+      tags:
+        - Cargos
+      summary: Obtener cargo por ID
       responses:
         "200":
           description: Cargo encontrado
     put:
-      summary: Actualizar un cargo
+      tags:
+        - Cargos
+      summary: Actualizar cargo
       requestBody:
         required: true
         content:
@@ -205,19 +258,25 @@ paths:
         "200":
           description: Cargo actualizado
     delete:
-      summary: Eliminar un cargo
+      tags:
+        - Cargos
+      summary: Eliminar cargo
       responses:
         "200":
           description: Cargo eliminado
 
   /comentarios:
     get:
-      summary: Listar todos los comentarios
+      tags:
+        - Comentarios
+      summary: Listar comentarios
       responses:
         "200":
           description: Lista de comentarios
     post:
-      summary: Crear un comentario
+      tags:
+        - Comentarios
+      summary: Crear comentario
       requestBody:
         required: true
         content:
@@ -229,9 +288,6 @@ paths:
                   type: integer
                 descripcion:
                   type: string
-                created_at:
-                  type: string
-                  format: date-time
               required:
                 - candidato_id
                 - descripcion
@@ -247,12 +303,16 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener un comentario por ID
+      tags:
+        - Comentarios
+      summary: Obtener comentario por ID
       responses:
         "200":
           description: Comentario encontrado
     put:
-      summary: Actualizar un comentario
+      tags:
+        - Comentarios
+      summary: Actualizar comentario
       requestBody:
         required: true
         content:
@@ -266,18 +326,24 @@ paths:
         "200":
           description: Comentario actualizado
     delete:
-      summary: Eliminar un comentario
+      tags:
+        - Comentarios
+      summary: Eliminar comentario
       responses:
         "200":
           description: Comentario eliminado
 
   /comunas:
     get:
+      tags:
+        - Comunas
       summary: Listar todas las comunas
       responses:
         "200":
           description: Lista de comunas
     post:
+      tags:
+        - Comunas
       summary: Crear una comuna
       requestBody:
         required: true
@@ -305,12 +371,16 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener una comuna por ID
+      tags:
+        - Comunas
+      summary: Obtener comuna por ID
       responses:
         "200":
           description: Comuna encontrada
     put:
-      summary: Actualizar una comuna
+      tags:
+        - Comunas
+      summary: Actualizar comuna
       requestBody:
         required: true
         content:
@@ -326,19 +396,25 @@ paths:
         "200":
           description: Comuna actualizada
     delete:
-      summary: Eliminar una comuna
+      tags:
+        - Comunas
+      summary: Eliminar comuna
       responses:
         "200":
           description: Comuna eliminada
 
   /documentos:
     get:
-      summary: Listar todos los documentos
+      tags:
+        - Documentos
+      summary: Listar documentos
       responses:
         "200":
           description: Lista de documentos
     post:
-      summary: Crear un documento
+      tags:
+        - Documentos
+      summary: Crear documento
       requestBody:
         required: true
         content:
@@ -362,12 +438,16 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener un documento por ID
+      tags:
+        - Documentos
+      summary: Obtener documento por ID
       responses:
         "200":
           description: Documento encontrado
     put:
-      summary: Actualizar un documento
+      tags:
+        - Documentos
+      summary: Actualizar documento
       requestBody:
         required: true
         content:
@@ -381,18 +461,24 @@ paths:
         "200":
           description: Documento actualizado
     delete:
-      summary: Eliminar un documento
+      tags:
+        - Documentos
+      summary: Eliminar documento
       responses:
         "200":
           description: Documento eliminado
 
   /documentos_candidatos:
     get:
-      summary: Listar todas las relaciones documento–candidato
+      tags:
+        - Documentos_Candidatos
+      summary: Listar relaciones documento–candidato
       responses:
         "200":
           description: Lista de relaciones
     post:
+      tags:
+        - Documentos_Candidatos
       summary: Asociar documento a candidato
       requestBody:
         required: true
@@ -423,11 +509,15 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener relación documento–candidato por ID
+      tags:
+        - Documentos_Candidatos
+      summary: Obtener relación por ID
       responses:
         "200":
           description: Relación encontrada
     put:
+      tags:
+        - Documentos_Candidatos
       summary: Actualizar relación documento–candidato
       requestBody:
         required: true
@@ -442,18 +532,24 @@ paths:
         "200":
           description: Relación actualizada
     delete:
-      summary: Eliminar relación documento–candidato
+      tags:
+        - Documentos_Candidatos
+      summary: Eliminar relación
       responses:
         "200":
           description: Relación eliminada
 
   /estado_candidatos:
     get:
+      tags:
+        - Estado_Candidatos
       summary: Listar estados de candidatos
       responses:
         "200":
           description: Lista de estados
     post:
+      tags:
+        - Estado_Candidatos
       summary: Crear estado de candidato
       requestBody:
         required: true
@@ -478,11 +574,15 @@ paths:
         schema:
           type: integer
     get:
-      summary: Obtener estado de candidato por ID
+      tags:
+        - Estado_Candidatos
+      summary: Obtener estado de candidato
       responses:
         "200":
           description: Estado encontrado
     put:
+      tags:
+        - Estado_Candidatos
       summary: Actualizar estado de candidato
       requestBody:
         required: true
@@ -497,6 +597,8 @@ paths:
         "200":
           description: Estado actualizado
     delete:
+      tags:
+        - Estado_Candidatos
       summary: Eliminar estado de candidato
       responses:
         "200":
@@ -504,11 +606,15 @@ paths:
 
   /estados_civiles:
     get:
+      tags:
+        - Estados_Civiles
       summary: Listar estados civiles
       responses:
         "200":
           description: Lista de estados civiles
     post:
+      tags:
+        - Estados_Civiles
       summary: Crear estado civil
       requestBody:
         required: true
@@ -533,11 +639,15 @@ paths:
         schema:
           type: integer
     get:
+      tags:
+        - Estados_Civiles
       summary: Obtener estado civil por ID
       responses:
         "200":
           description: Estado civil encontrado
     put:
+      tags:
+        - Estados_Civiles
       summary: Actualizar estado civil
       requestBody:
         required: true
@@ -552,6 +662,8 @@ paths:
         "200":
           description: Estado civil actualizado
     delete:
+      tags:
+        - Estados_Civiles
       summary: Eliminar estado civil
       responses:
         "200":
@@ -559,11 +671,15 @@ paths:
 
   /nacionalidades:
     get:
+      tags:
+        - Nacionalidades
       summary: Listar nacionalidades
       responses:
         "200":
           description: Lista de nacionalidades
     post:
+      tags:
+        - Nacionalidades
       summary: Crear nacionalidad
       requestBody:
         required: true
@@ -588,11 +704,15 @@ paths:
         schema:
           type: integer
     get:
+      tags:
+        - Nacionalidades
       summary: Obtener nacionalidad por ID
       responses:
         "200":
           description: Nacionalidad encontrada
     put:
+      tags:
+        - Nacionalidades
       summary: Actualizar nacionalidad
       requestBody:
         required: true
@@ -607,6 +727,8 @@ paths:
         "200":
           description: Nacionalidad actualizada
     delete:
+      tags:
+        - Nacionalidades
       summary: Eliminar nacionalidad
       responses:
         "200":
@@ -614,11 +736,15 @@ paths:
 
   /regiones:
     get:
+      tags:
+        - Regiones
       summary: Listar regiones
       responses:
         "200":
           description: Lista de regiones
     post:
+      tags:
+        - Regiones
       summary: Crear región
       requestBody:
         required: true
@@ -643,11 +769,15 @@ paths:
         schema:
           type: integer
     get:
+      tags:
+        - Regiones
       summary: Obtener región por ID
       responses:
         "200":
           description: Región encontrada
     put:
+      tags:
+        - Regiones
       summary: Actualizar región
       requestBody:
         required: true
@@ -662,6 +792,8 @@ paths:
         "200":
           description: Región actualizada
     delete:
+      tags:
+        - Regiones
       summary: Eliminar región
       responses:
         "200":
@@ -669,11 +801,15 @@ paths:
 
   /titulos_profesionales:
     get:
+      tags:
+        - Titulos_Profesionales
       summary: Listar títulos profesionales
       responses:
         "200":
-          description: Lista de títulos
+          description: Lista de títulos profesionales
     post:
+      tags:
+        - Titulos_Profesionales
       summary: Crear título profesional
       requestBody:
         required: true
@@ -698,11 +834,15 @@ paths:
         schema:
           type: integer
     get:
+      tags:
+        - Titulos_Profesionales
       summary: Obtener título profesional por ID
       responses:
         "200":
           description: Título profesional encontrado
     put:
+      tags:
+        - Titulos_Profesionales
       summary: Actualizar título profesional
       requestBody:
         required: true
@@ -717,6 +857,8 @@ paths:
         "200":
           description: Título profesional actualizado
     delete:
+      tags:
+        - Titulos_Profesionales
       summary: Eliminar título profesional
       responses:
         "200":

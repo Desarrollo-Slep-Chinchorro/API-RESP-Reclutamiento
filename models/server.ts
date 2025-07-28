@@ -1,13 +1,14 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import db from "../BD/connection";
 import path from "path";
 import cors from "cors";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+// Routes
 import CandidatoRoutes from "../routes/candidatoRoute";
-import CargoRoutes from "../routes/cargoRoute";
 import CandidatosCargosRoutes from "../routes/candidatoCargosRoute";
+import CargoRoutes from "../routes/cargoRoute";
 import ComentarioRoutes from "../routes/comentarioRoute";
 import ComunaRoutes from "../routes/comunaRoute";
 import RegionRoutes from "../routes/regionRoute";
@@ -16,6 +17,8 @@ import DocumentoRoutes from "../routes/documentoRoute";
 import EstadoCivilRoutes from "../routes/estadoCivilRoutes";
 import EstadoCandidatoRoutes from "../routes/estadoCandidatoRoute";
 import NacionaliadadRoutes from "../routes/nacionalidaRoutes";
+import TituloProfesionalRoutes from "../routes/tituloProfesionalRoute";
+
 import { syncModels } from "./index";
 
 class Server {
@@ -35,6 +38,7 @@ class Server {
     estadoCivil: "/api/estado_civiles",
     nacionalidad: "/api/nacionalidades",
     region: "/api/regiones",
+    tituloProfesional: "/api/titulos_profesionales",
   };
 
   constructor() {
@@ -57,6 +61,7 @@ class Server {
     this.app.use(this.apiPath.nacionalidad, NacionaliadadRoutes);
     this.app.use(this.apiPath.region, RegionRoutes);
     this.app.use(this.apiPath.estadoCivil, EstadoCivilRoutes);
+    this.app.use(this.apiPath.tituloProfesional, TituloProfesionalRoutes);
     this.app.use(
       this.apiPath.doc,
       swaggerUi.serve,

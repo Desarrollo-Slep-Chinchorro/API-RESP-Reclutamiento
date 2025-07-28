@@ -25,3 +25,7 @@ temp
 
 # Ignore IDE specific files
 *.sublime-workspace 
+.gitignore
+.gitatributes
+# Ignore OS specific files
+Thumbs.db 
