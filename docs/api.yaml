@@ -1,0 +1,723 @@
+openapi: 3.0.0
+info:
+  title: API Reclutamiento
+  version: 1.0.0
+  description: API REST para la gestión de reclutamiento.
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor local
+
+paths:
+  /candidatos:
+    get:
+      summary: Listar todos los candidatos
+      responses:
+        "200":
+          description: Lista de candidatos
+    post:
+      summary: Crear un candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rut:
+                  type: string
+                nombre_completo:
+                  type: string
+                titulo_profesional_id:
+                  type: integer
+                telefono:
+                  type: string
+                correo:
+                  type: string
+                estado_candidato_id:
+                  type: integer
+                nacionalidad_id:
+                  type: integer
+                estado_civil_id:
+                  type: integer
+                direccion:
+                  type: string
+                comuna_id:
+                  type: integer
+              required:
+                - rut
+                - nombre_completo
+                - titulo_profesional_id
+                - telefono
+                - correo
+                - nacionalidad_id
+                - estado_civil_id
+                - comuna_id
+      responses:
+        "201":
+          description: Candidato creado
+
+  /candidatos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener un candidato por ID
+      responses:
+        "200":
+          description: Candidato encontrado
+    put:
+      summary: Actualizar un candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rut:
+                  type: string
+                nombre_completo:
+                  type: string
+                titulo_profesional_id:
+                  type: integer
+                telefono:
+                  type: string
+                correo:
+                  type: string
+                estado_candidato_id:
+                  type: integer
+                nacionalidad_id:
+                  type: integer
+                estado_civil_id:
+                  type: integer
+                direccion:
+                  type: string
+                comuna_id:
+                  type: integer
+      responses:
+        "200":
+          description: Candidato actualizado
+    delete:
+      summary: Eliminar un candidato
+      responses:
+        "200":
+          description: Candidato eliminado
+
+  /candidatos_cargos:
+    get:
+      summary: Listar todas las relaciones candidato–cargo
+      responses:
+        "200":
+          description: Lista de relaciones
+    post:
+      summary: Asignar un cargo a un candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                candidato_id:
+                  type: integer
+                cargo_id:
+                  type: integer
+              required:
+                - candidato_id
+                - cargo_id
+      responses:
+        "201":
+          description: Relación creada
+
+  /candidatos_cargos/{candidato_id}/{cargo_id}:
+    parameters:
+      - name: candidato_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: cargo_id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener relación específica candidato–cargo
+      responses:
+        "200":
+          description: Relación encontrada
+    delete:
+      summary: Eliminar relación candidato–cargo
+      responses:
+        "200":
+          description: Relación eliminada
+
+  /cargos:
+    get:
+      summary: Listar todos los cargos
+      responses:
+        "200":
+          description: Lista de cargos
+    post:
+      summary: Crear un cargo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Cargo creado
+
+  /cargos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener un cargo por ID
+      responses:
+        "200":
+          description: Cargo encontrado
+    put:
+      summary: Actualizar un cargo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Cargo actualizado
+    delete:
+      summary: Eliminar un cargo
+      responses:
+        "200":
+          description: Cargo eliminado
+
+  /comentarios:
+    get:
+      summary: Listar todos los comentarios
+      responses:
+        "200":
+          description: Lista de comentarios
+    post:
+      summary: Crear un comentario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                candidato_id:
+                  type: integer
+                descripcion:
+                  type: string
+                created_at:
+                  type: string
+                  format: date-time
+              required:
+                - candidato_id
+                - descripcion
+      responses:
+        "201":
+          description: Comentario creado
+
+  /comentarios/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener un comentario por ID
+      responses:
+        "200":
+          description: Comentario encontrado
+    put:
+      summary: Actualizar un comentario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                descripcion:
+                  type: string
+      responses:
+        "200":
+          description: Comentario actualizado
+    delete:
+      summary: Eliminar un comentario
+      responses:
+        "200":
+          description: Comentario eliminado
+
+  /comunas:
+    get:
+      summary: Listar todas las comunas
+      responses:
+        "200":
+          description: Lista de comunas
+    post:
+      summary: Crear una comuna
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                region_id:
+                  type: integer
+              required:
+                - nombre
+                - region_id
+      responses:
+        "201":
+          description: Comuna creada
+
+  /comunas/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener una comuna por ID
+      responses:
+        "200":
+          description: Comuna encontrada
+    put:
+      summary: Actualizar una comuna
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                region_id:
+                  type: integer
+      responses:
+        "200":
+          description: Comuna actualizada
+    delete:
+      summary: Eliminar una comuna
+      responses:
+        "200":
+          description: Comuna eliminada
+
+  /documentos:
+    get:
+      summary: Listar todos los documentos
+      responses:
+        "200":
+          description: Lista de documentos
+    post:
+      summary: Crear un documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Documento creado
+
+  /documentos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener un documento por ID
+      responses:
+        "200":
+          description: Documento encontrado
+    put:
+      summary: Actualizar un documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Documento actualizado
+    delete:
+      summary: Eliminar un documento
+      responses:
+        "200":
+          description: Documento eliminado
+
+  /documentos_candidatos:
+    get:
+      summary: Listar todas las relaciones documento–candidato
+      responses:
+        "200":
+          description: Lista de relaciones
+    post:
+      summary: Asociar documento a candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                documento_id:
+                  type: integer
+                candidato_id:
+                  type: integer
+                ruta:
+                  type: string
+              required:
+                - documento_id
+                - candidato_id
+                - ruta
+      responses:
+        "201":
+          description: Relación creada
+
+  /documentos_candidatos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener relación documento–candidato por ID
+      responses:
+        "200":
+          description: Relación encontrada
+    put:
+      summary: Actualizar relación documento–candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ruta:
+                  type: string
+      responses:
+        "200":
+          description: Relación actualizada
+    delete:
+      summary: Eliminar relación documento–candidato
+      responses:
+        "200":
+          description: Relación eliminada
+
+  /estado_candidatos:
+    get:
+      summary: Listar estados de candidatos
+      responses:
+        "200":
+          description: Lista de estados
+    post:
+      summary: Crear estado de candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Estado creado
+
+  /estado_candidatos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener estado de candidato por ID
+      responses:
+        "200":
+          description: Estado encontrado
+    put:
+      summary: Actualizar estado de candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Estado actualizado
+    delete:
+      summary: Eliminar estado de candidato
+      responses:
+        "200":
+          description: Estado eliminado
+
+  /estados_civiles:
+    get:
+      summary: Listar estados civiles
+      responses:
+        "200":
+          description: Lista de estados civiles
+    post:
+      summary: Crear estado civil
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Estado civil creado
+
+  /estados_civiles/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener estado civil por ID
+      responses:
+        "200":
+          description: Estado civil encontrado
+    put:
+      summary: Actualizar estado civil
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Estado civil actualizado
+    delete:
+      summary: Eliminar estado civil
+      responses:
+        "200":
+          description: Estado civil eliminado
+
+  /nacionalidades:
+    get:
+      summary: Listar nacionalidades
+      responses:
+        "200":
+          description: Lista de nacionalidades
+    post:
+      summary: Crear nacionalidad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Nacionalidad creada
+
+  /nacionalidades/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener nacionalidad por ID
+      responses:
+        "200":
+          description: Nacionalidad encontrada
+    put:
+      summary: Actualizar nacionalidad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Nacionalidad actualizada
+    delete:
+      summary: Eliminar nacionalidad
+      responses:
+        "200":
+          description: Nacionalidad eliminada
+
+  /regiones:
+    get:
+      summary: Listar regiones
+      responses:
+        "200":
+          description: Lista de regiones
+    post:
+      summary: Crear región
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Región creada
+
+  /regiones/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener región por ID
+      responses:
+        "200":
+          description: Región encontrada
+    put:
+      summary: Actualizar región
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Región actualizada
+    delete:
+      summary: Eliminar región
+      responses:
+        "200":
+          description: Región eliminada
+
+  /titulos_profesionales:
+    get:
+      summary: Listar títulos profesionales
+      responses:
+        "200":
+          description: Lista de títulos
+    post:
+      summary: Crear título profesional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+              required:
+                - nombre
+      responses:
+        "201":
+          description: Título profesional creado
+
+  /titulos_profesionales/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Obtener título profesional por ID
+      responses:
+        "200":
+          description: Título profesional encontrado
+    put:
+      summary: Actualizar título profesional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+      responses:
+        "200":
+          description: Título profesional actualizado
+    delete:
+      summary: Eliminar título profesional
+      responses:
+        "200":
+          description: Título profesional eliminado
