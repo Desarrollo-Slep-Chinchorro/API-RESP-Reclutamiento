@@ -47,6 +47,7 @@ Candidato.init(
     estado_civil_id: { type: DataTypes.INTEGER, allowNull: false },
     direccion: { type: DataTypes.STRING(255), allowNull: false },
     comuna_id: { type: DataTypes.INTEGER, allowNull: false },
+    usuario_id: { type: DataTypes.INTEGER, allowNull: false },
     created_at: { type: DataTypes.DATE, allowNull: false },
     updated_at: { type: DataTypes.DATE, allowNull: false },
   },

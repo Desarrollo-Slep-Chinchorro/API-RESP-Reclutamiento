@@ -1,66 +1,48 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { SignOptions, JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import { IUser } from "../controllers/authController";
 
-dotenv.config();
-
-// Extend Express Request interface to include `user`
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload;
+      user?: IUser;
     }
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN as string; // e.g. "1h"
+const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 
-// Helper to sign a JWT for a given payload
-export const generateToken = (payload: object): string => {
-  const options: SignOptions = {
-    expiresIn: JWT_EXPIRES_IN as unknown as SignOptions["expiresIn"],
-  };
-  return jwt.sign(payload, JWT_SECRET, options);
-};
-
-// Middleware to verify JWT and attach decoded payload to req.user
-export const authenticateToken = (
+export const verifyToken = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && (authHeader as string).split(" ")[1];
+  const token = req.headers["authorization"]?.split(" ")[1];
+
   if (!token) {
-    res.status(401).json({ message: "Token no proporcionado" });
+    res.status(403).json({ message: "Token no proporcionado" });
     return;
   }
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      res.status(403).json({ message: "Token inválido" });
-      return;
-    }
-    // Attach user payload to request
-    req.user = decoded as JwtPayload;
+
+  try {
+    const decoded = jwt.verify(token, jwtSecret) as IUser;
+    req.user = decoded;
     next();
-  });
+  } catch (error) {
+    res.status(401).json({ message: "Token inválido o expirado" });
+    return;
+  }
 };
 
-// Middleware to check specific roles (example)
-export const authorizeRoles = (...roles: string[]) => {
+export const checkRole = (roles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user;
-    if (!user || !roles.includes((user.role as string) || "")) {
-      res
-        .status(403)
-        .json({ message: "No tienes permisos para acceder a este recurso" });
+    const user = req.user as IUser;
+
+    if (!roles.includes(user.rol)) {
+      res.status(403).json({ message: "No tienes permisos para esta acción" });
       return;
     }
+
     next();
   };
 };
-
-// Installation:
-// npm install jsonwebtoken dotenv
-// npm install -D @types/jsonwebtoken @types/dotenv
