@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import multer from "multer";
 import path from "path";
 import DocumentoCandidato from "../models/documentos_candidato";
+import { log } from "console";
 
 // Multer storage configuration
 const storage = multer.diskStorage({
@@ -45,6 +46,7 @@ export const asyncHandler =
 export const uploadCandidatoDocumento = asyncHandler(
   async (req: Request, res: Response) => {
     const { candidato_id, documento_id } = req.body;
+    log("candidato_id", candidato_id);
     if (!req.file) {
       res.status(400).json({ message: "Archivo es requerido" });
       return;
