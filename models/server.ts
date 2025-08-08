@@ -18,6 +18,7 @@ import EstadoCivilRoutes from "../routes/estadoCivilRoutes";
 import EstadoCandidatoRoutes from "../routes/estadoCandidatoRoute";
 import NacionaliadadRoutes from "../routes/nacionalidaRoutes";
 import TituloProfesionalRoutes from "../routes/tituloProfesionalRoute";
+import AuthRoutes from "../routes/authRoutes";
 
 import { syncModels } from "./index";
 
@@ -31,6 +32,7 @@ class Server {
 
   // Define API paths
   private apiPath = {
+    auth: "/api/auth",
     cargos: "/api/cargos",
     candidato: "/api/candidatos",
     candidatosCargos: "/api/candidatos_cargos",
@@ -56,6 +58,7 @@ class Server {
   }
 
   private routes() {
+    this.app.use(this.apiPath.auth, AuthRoutes);
     this.app.use(this.apiPath.candidato, CandidatoRoutes);
     this.app.use(this.apiPath.cargos, CargoRoutes);
     this.app.use(this.apiPath.candidatosCargos, CandidatosCargosRoutes);

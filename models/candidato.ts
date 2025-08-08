@@ -26,30 +26,38 @@ Candidato.init(
       validate: { is: /^\d{7,8}-[\dkK]$/ },
     },
     nombre_completo: { type: DataTypes.STRING(100), allowNull: false },
-    titulo_profesional_id: { type: DataTypes.INTEGER, allowNull: false },
+    titulo_profesional_id: { type: DataTypes.INTEGER, allowNull: true },
     telefono: {
       type: DataTypes.STRING(15),
-      allowNull: false,
+      allowNull: true,
       validate: { is: /^\+?\d{8,12}$/ },
     },
     correo: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
       unique: true,
       validate: { isEmail: true },
     },
     estado_candidato_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 1,
     },
-    nacionalidad_id: { type: DataTypes.INTEGER, allowNull: false },
-    estado_civil_id: { type: DataTypes.INTEGER, allowNull: false },
-    direccion: { type: DataTypes.STRING(255), allowNull: false },
-    comuna_id: { type: DataTypes.INTEGER, allowNull: false },
+    nacionalidad_id: { type: DataTypes.INTEGER, allowNull: true },
+    estado_civil_id: { type: DataTypes.INTEGER, allowNull: true },
+    direccion: { type: DataTypes.STRING(255), allowNull: true },
+    comuna_id: { type: DataTypes.INTEGER, allowNull: true },
     usuario_id: { type: DataTypes.INTEGER, allowNull: false },
-    created_at: { type: DataTypes.DATE, allowNull: false },
-    updated_at: { type: DataTypes.DATE, allowNull: false },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW, // Añade defaultValue
+    },
   },
   {
     sequelize: db,
@@ -58,9 +66,10 @@ Candidato.init(
     hooks: {
       beforeUpdate: async (instance: Candidato) => {
         await db.query("SELECT public.update_modified_column()");
+        // También actualiza manualmente el campo
+        instance.updated_at = new Date();
       },
     },
   }
 );
-
 export default Candidato;

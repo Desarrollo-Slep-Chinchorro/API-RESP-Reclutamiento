@@ -2,14 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { IUser } from "../controllers/authController";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: IUser;
-    }
-  }
-}
-
 const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 
 export const verifyToken = (
