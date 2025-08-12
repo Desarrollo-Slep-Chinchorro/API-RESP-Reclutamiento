@@ -2,8 +2,13 @@ import { Request, Response } from "express";
 import Comuna from "../models/comuna";
 
 export const getAllComunas = async (_req: Request, res: Response) => {
+  const { region_id } = _req.query;
+  console.log("region_id en controller:", region_id);
   try {
-    const comunas = await Comuna.findAll();
+    const comunas = await Comuna.findAll({
+      where: { ...(region_id ? { region_id } : {}) },
+      order: [["nombre", "ASC"]],
+    });
     res.json(comunas);
     return;
   } catch (error) {
