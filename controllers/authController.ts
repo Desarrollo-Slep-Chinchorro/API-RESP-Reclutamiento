@@ -4,9 +4,25 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Candidato from "../models/candidato";
 import db from "../BD/connection";
+import { v4 as uuidv4 } from "uuid";
+import Comuna from "../models/comuna";
+import Region from "../models/region";
+import Cargo from "../models/cargo";
 
 const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 export const saltRounds = 10;
+
+async function generarUIDUnico(): Promise<string> {
+  let uid: string = "";
+  let existe: any = true;
+
+  while (existe) {
+    uid = uuidv4();
+    existe = await Candidato.findOne({ where: { uid } });
+  }
+
+  return uid;
+}
 
 declare global {
   namespace Express {
@@ -69,22 +85,36 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: "2h" }
     );
 
-    const canditato = await Candidato.findOne({
+    const candidato = await Candidato.findOne({
       where: { usuario_id: user.id },
+      include: [
+        {
+          model: Comuna,
+          include: [Region],
+        },
+        {
+          model: Cargo,
+          attributes: ["id", "nombre"], // Atributos específicos de Cargo
+          through: { attributes: [] },
+          as: "cargos",
+        },
+      ],
     });
+
+    console.log("candidato", candidato);
 
     // Excluir password en la respuesta
     const userResponse = {
-      id: user.id,
-      usuario: user.usuario,
+      id: user.uid,
       rol: user.rol,
       estado: user.estado,
-      created_at: user.created_at,
-      nombre: canditato ? canditato.nombre_completo : null,
-      correo: canditato ? canditato.correo : null,
+      token,
     };
 
-    res.json({ token, user: userResponse });
+    res.json({
+      user: userResponse,
+      candidato,
+    });
     return;
   } catch (error) {
     console.error(error);
@@ -138,10 +168,12 @@ export const registerCandidate = async (req: Request, res: Response) => {
     try {
       // Crear el usuario
       const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const uid = generarUIDUnico();
       const newUser: any = await Usuario.create(
         {
           usuario,
           password: hashedPassword,
+          uid,
         },
         { transaction }
       );
@@ -169,18 +201,15 @@ export const registerCandidate = async (req: Request, res: Response) => {
       // Excluir password en la respuesta
       const userResponse = {
         id: newUser.id,
-        usuario: newUser.usuario,
         rol: newUser.rol,
         estado: newUser.estado,
-        created_at: newUser.created_at,
-        nombre: newCandidate.nombre_completo,
-        correo: newCandidate.correo,
+        token,
       };
 
       res.status(201).json({
         message: "Registro exitoso",
-        token,
         user: userResponse,
+        candidato: newCandidate,
       });
       return;
     } catch (error) {

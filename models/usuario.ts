@@ -5,8 +5,9 @@ const Usuario = db.define(
   "usuarios",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    usuario: { type: DataTypes.STRING(100), allowNull: false },
+    usuario: { type: DataTypes.STRING(11), allowNull: false },
     password: { type: DataTypes.STRING(100), allowNull: false },
+    uid: { type: DataTypes.STRING(200), allowNull: false },
     estado: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     rol: { type: DataTypes.STRING(50), allowNull: false, defaultValue: "user" }, // Default role is 'user'
     created_at: {

@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Candidato from "../models/candidato";
+import CandidatosCargos from "../models/candidatos_cargos";
+import db from "../BD/connection";
 
 export const getAllCandidatos = async (req: Request, res: Response) => {
   try {
@@ -35,16 +37,90 @@ export const getCandidatoById = async (req: Request, res: Response) => {
 
 export const updateCandidato = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { datos } = req.body;
+  const { cargos: nuevosCargos = [], ...datosNuevos } = datos;
+
+  console.log("id", id);
+  console.log("req.body", req.body);
+  console.log("nuevosCargos", nuevosCargos);
+
+  const transaction = await db.transaction();
+
   try {
-    const [updated] = await Candidato.update(req.body, { where: { id } });
-    if (!updated) {
+    // 1. Get current candidate data
+    const candidatoActual = await Candidato.findByPk(id, { transaction });
+
+    if (!candidatoActual) {
+      await transaction.rollback();
       res.status(404).json({ message: "Candidato no encontrado" });
       return;
     }
-    const updatedCandidato = await Candidato.findByPk(id);
-    res.json(updatedCandidato);
-  } catch (error) {
-    res.status(400).json({ message: "Error al actualizar candidato", error });
+
+    // 2. Check if candidate data has changed
+    const datosHanCambiado = Object.entries(datosNuevos).some(
+      ([key, nuevoValor]) => candidatoActual.get(key) !== nuevoValor
+    );
+
+    // 3. Update if there are changes
+    if (datosHanCambiado) {
+      await Candidato.update(datosNuevos, {
+        where: { id },
+        transaction,
+      });
+    }
+
+    // 4. Check if positions (cargos) have changed
+    const cargosActuales = await CandidatosCargos.findAll({
+      where: { candidato_id: id },
+      transaction,
+    });
+
+    const idsActuales = cargosActuales.map((c: any) => c.cargo_id).sort();
+    const idsNuevos = nuevosCargos.map(Number).sort();
+
+    // Compare arrays efficiently
+    const cargosHanCambiado = !(
+      idsActuales.length === idsNuevos.length &&
+      idsActuales.every((val, index) => val === idsNuevos[index])
+    );
+
+    if (cargosHanCambiado) {
+      // Efficient bulk update using transaction
+      await CandidatosCargos.destroy({
+        where: { candidato_id: id },
+        transaction,
+      });
+
+      if (idsNuevos.length > 0) {
+        await CandidatosCargos.bulkCreate(
+          idsNuevos.map((cargoId: any) => ({
+            candidato_id: Number(id),
+            cargo_id: cargoId,
+          })),
+          { transaction }
+        );
+      }
+    }
+
+    await transaction.commit();
+
+    // Get updated candidate with relations if needed
+    const candidatoFinal = await Candidato.findByPk(id, {
+      include: [
+        /* any relations you want to include */
+      ],
+    });
+
+    res.json(candidatoFinal);
+    return;
+  } catch (error: any) {
+    await transaction.rollback();
+    console.error("Error updating candidato:", error);
+    res.status(400).json({
+      message: "Error al actualizar candidato",
+      error: error.message,
+    });
+    return;
   }
 };
 

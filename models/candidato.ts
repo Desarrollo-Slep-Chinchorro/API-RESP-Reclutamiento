@@ -48,6 +48,8 @@ Candidato.init(
     direccion: { type: DataTypes.STRING(255), allowNull: true },
     comuna_id: { type: DataTypes.INTEGER, allowNull: true },
     usuario_id: { type: DataTypes.INTEGER, allowNull: false },
+    fecha_nacimiento: { type: DataTypes.DATE, allowNull: true },
+    presentacion: { type: DataTypes.STRING(1000), allowNull: true },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
