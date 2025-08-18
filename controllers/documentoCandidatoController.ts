@@ -38,6 +38,31 @@ export const getDocumentoCandidatoById = async (
   }
 };
 
+export const getDocumentoCandidatoByCandidatoId = async (
+  req: Request,
+  res: Response
+) => {
+  const { id } = req.params;
+  try {
+    const docCand = await DocumentoCandidato.findAll({
+      where: {
+        candidato_id: id,
+      },
+    });
+    if (!docCand) {
+      res.status(404).json({ message: "Documento de candidato no encontrado" });
+      return;
+    }
+    res.json(docCand);
+    return;
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener documento de candidato", error });
+    return;
+  }
+};
+
 export const createDocumentoCandidato = async (req: Request, res: Response) => {
   try {
     const newDocCand = await DocumentoCandidato.create(req.body);

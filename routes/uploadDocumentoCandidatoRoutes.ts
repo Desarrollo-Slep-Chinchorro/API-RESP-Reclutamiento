@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   uploadSingle,
   uploadCandidatoDocumento,
-} from "../controllers/uploadController";
+} from "../controllers/uploadDocumentoCandidatoController";
 import {
   paramIdSchema,
   documentoCandidatoUploadSchema,
@@ -15,12 +15,6 @@ const router = Router();
 
 // Otras rutas...
 
-router.post(
-  "/:id/documentos/upload",
-  validateParams(paramIdSchema),
-  uploadSingle,
-  validateBody(documentoCandidatoUploadSchema),
-  uploadCandidatoDocumento
-);
+router.post("/", uploadCandidatoDocumento);
 
 export default router;

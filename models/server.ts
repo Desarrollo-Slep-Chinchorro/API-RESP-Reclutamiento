@@ -19,6 +19,7 @@ import EstadoCandidatoRoutes from "../routes/estadoCandidatoRoute";
 import NacionaliadadRoutes from "../routes/nacionalidaRoutes";
 import TituloProfesionalRoutes from "../routes/tituloProfesionalRoute";
 import AuthRoutes from "../routes/authRoutes";
+import uploadDocumentoCandidatoRoutes from "../routes/uploadDocumentoCandidatoRoutes";
 
 import { syncModels } from "./index";
 
@@ -46,6 +47,7 @@ class Server {
     nacionalidad: "/api/nacionalidades",
     region: "/api/regiones",
     tituloProfesional: "/api/titulos_profesionales",
+    uploadCandidatoDocumento: "/api/upload_documentoCandidato",
   };
 
   constructor() {
@@ -71,6 +73,10 @@ class Server {
     this.app.use(this.apiPath.region, RegionRoutes);
     this.app.use(this.apiPath.estadoCivil, EstadoCivilRoutes);
     this.app.use(this.apiPath.tituloProfesional, TituloProfesionalRoutes);
+    this.app.use(
+      this.apiPath.uploadCandidatoDocumento,
+      uploadDocumentoCandidatoRoutes
+    );
   }
 
   async bdConnection() {

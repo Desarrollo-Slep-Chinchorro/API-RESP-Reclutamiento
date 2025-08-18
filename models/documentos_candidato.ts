@@ -8,6 +8,12 @@ const DocumentoCandidato = db.define(
     documento_id: { type: DataTypes.INTEGER, allowNull: false },
     candidato_id: { type: DataTypes.INTEGER, allowNull: false },
     ruta: { type: DataTypes.STRING(255), allowNull: false },
+    nombre: { type: DataTypes.STRING(255), allowNull: false },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   { timestamps: false }
 );
