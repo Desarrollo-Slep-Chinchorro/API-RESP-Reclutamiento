@@ -18,7 +18,7 @@ async function generarUIDUnico(): Promise<string> {
 
   while (existe) {
     uid = uuidv4();
-    existe = await Candidato.findOne({ where: { uid } });
+    existe = await Usuario.findOne({ where: { uid } });
   }
 
   return uid;
@@ -151,7 +151,7 @@ export const registerCandidate = async (req: Request, res: Response) => {
       return;
     }
 
-    // Verificar si el email ya está registrado
+    // Verificar si el rut ya está registrado
     const existingCandidate = await Candidato.findOne({
       where: { rut: usuario },
     });
@@ -168,7 +168,7 @@ export const registerCandidate = async (req: Request, res: Response) => {
     try {
       // Crear el usuario
       const hashedPassword = await bcrypt.hash(password, saltRounds);
-      const uid = generarUIDUnico();
+      const uid = await generarUIDUnico();
       const newUser: any = await Usuario.create(
         {
           usuario,
@@ -191,12 +191,13 @@ export const registerCandidate = async (req: Request, res: Response) => {
 
       // Confirmar la transacción
       await transaction.commit();
-
+      console.log("newUser", newUser);
       const token = jwt.sign(
         { id: newUser.id, usuario: usuario, rol: newUser.rol },
         jwtSecret,
         { expiresIn: "2h" }
       );
+      console.log("token", token);
 
       // Excluir password en la respuesta
       const userResponse = {
@@ -205,6 +206,8 @@ export const registerCandidate = async (req: Request, res: Response) => {
         estado: newUser.estado,
         token,
       };
+      console.log("userResponse", userResponse);
+      console.log("newCandidate", newCandidate);
 
       res.status(201).json({
         message: "Registro exitoso",

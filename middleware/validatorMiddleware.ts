@@ -1,4 +1,7 @@
 import Joi, { Schema } from "joi";
+import multer from "multer";
+import CryptoJS from "crypto-js";
+import baseX from "base-x";
 
 // Reusable parameter schema for `:id`
 export const paramIdSchema: Schema = Joi.object({
@@ -31,6 +34,7 @@ export const documentoCandidatoUploadSchema: Schema = Joi.object({
 
 // Export helper to validate body in routes
 import { Request, Response, NextFunction } from "express";
+import { log } from "console";
 
 export const validateBody =
   (schema: Schema) => (req: Request, res: Response, next: NextFunction) => {
@@ -52,3 +56,25 @@ export const validateParams =
     }
     next();
   };
+
+export const uploadMemory = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (req, file, cb) => {
+    const allowedExts = [".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"];
+    const ext = file.originalname.toLowerCase().match(/\.\w+$/)?.[0] || "";
+    if (allowedExts.includes(ext)) cb(null, true);
+    else cb(new Error(`Tipo de archivo no permitido: ${ext}`));
+  },
+}).single("file");
+
+export function decryptId(encoded: string): string {
+  const BASE62 =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const base62 = baseX(BASE62);
+  const secretKey = process.env.ID_ENCRYPT_KEY || "cL4v3-superS3cret4";
+  const bytes = base62.decode(encoded);
+  const encrypted = Buffer.from(bytes).toString("utf8");
+  const decrypted = CryptoJS.AES.decrypt(encrypted, secretKey);
+  return decrypted.toString(CryptoJS.enc.Utf8);
+}

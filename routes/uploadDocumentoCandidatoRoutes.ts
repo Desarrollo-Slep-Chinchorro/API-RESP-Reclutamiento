@@ -1,20 +1,18 @@
 // src/routes/candidatoRoutes.ts
 import { Router } from "express";
 import {
-  uploadSingle,
+  deleteFile,
   uploadCandidatoDocumento,
+  viewFiles,
 } from "../controllers/uploadDocumentoCandidatoController";
-import {
-  paramIdSchema,
-  documentoCandidatoUploadSchema,
-  validateParams,
-  validateBody,
-} from "../middleware/validatorMiddleware";
+import { uploadMemory } from "../middleware/validatorMiddleware";
 
 const router = Router();
 
 // Otras rutas...
 
-router.post("/", uploadCandidatoDocumento);
+router.post("/", uploadMemory, uploadCandidatoDocumento);
+router.get("/file/:id", viewFiles);
+router.delete("/:id", deleteFile);
 
 export default router;

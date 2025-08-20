@@ -1,137 +1,122 @@
+// controllers/documentos.ts
 import { Request, Response, NextFunction } from "express";
-import multer from "multer";
 import path from "path";
 import fs from "fs";
 import DocumentoCandidato from "../models/documentos_candidato";
+import { decryptId } from "../middleware/validatorMiddleware";
 
-// Configuración de almacenamiento
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Validación mejorada del RUT
-    const rut = req.body.rut;
-
-    if (!rut) {
-      return cb(new Error("RUT del candidato es requerido"), "");
+export const viewFiles = async (req: Request, res: Response) => {
+  const id = decryptId(req.params.id);
+  if (!id) {
+    res.status(400).json({ error: "ID inválido" });
+    return;
+  }
+  try {
+    const doc: any = await DocumentoCandidato.findByPk(id);
+    if (!doc || !doc.ruta) {
+      res.status(404).send("Archivo no encontrado");
+      return;
     }
 
-    // Sanitizar RUT y verificar formato
-    const cleanRUT = rut.replace(/[^0-9kK-]/g, "");
-    if (!/^\d{1,8}-[\dkK]$/.test(cleanRUT)) {
-      return cb(new Error("Formato de RUT inválido"), "");
+    const rutaAbsoluta = path.join(__dirname, "..", doc.ruta);
+    if (!fs.existsSync(rutaAbsoluta)) {
+      res.status(404).send("Archivo no existe en disco");
+      return;
     }
 
-    const uploadPath = path.join(__dirname, "../uploads", cleanRUT);
-
-    // Crear carpeta si no existe
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `file-${uniqueSuffix}${ext}`);
-  },
-});
-
-// Filtro de archivos mejorado
-const fileFilter = (
-  req: Request,
-  file: Express.Multer.File,
-  cb: multer.FileFilterCallback
-) => {
-  const allowedExts = [".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"];
-  const ext = path.extname(file.originalname).toLowerCase();
-
-  if (allowedExts.includes(ext)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Tipo de archivo no permitido: ${ext}`));
+    res.sendFile(rutaAbsoluta);
+  } catch (error) {
+    console.error("Error al servir archivo:", error);
+    res.status(500).send("Error interno");
   }
 };
 
-// Middleware Multer exportado con manejo de errores
-export const uploadSingle = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const multerMiddleware = multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: 2 * 1024 * 1024 },
-  }).single("file");
-
-  multerMiddleware(req, res, (err: any) => {
-    if (err) {
-      // Manejar diferentes tipos de errores de Multer
-      let status = 400;
-      let message = err.message;
-
-      if (err.code === "LIMIT_FILE_SIZE") {
-        message = "El archivo excede el tamaño máximo de 2MB";
-        status = 413;
-      }
-
-      return res.status(status).json({ error: message });
-    }
-    next();
-  });
-};
-
-// Controlador mejorado con validaciones
 export const uploadCandidatoDocumento = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  // Añade ": Promise<void>" aquí
-  console.log(req.body);
-  /*   try {
-    const { candidato_id, documento_id, rut } = req.body;
+  try {
+    const { rut, candidato_id, documento_id, nombre_para_mostrar } = req.body;
+    const archivo = req.file;
 
+    // Validaciones
     if (!rut || !candidato_id || !documento_id) {
-      res.status(400).json({
-        error:
-          "Todos los campos son requeridos: rut, candidato_id, documento_id",
-      });
-      return; // Usa return en lugar de devolver res
+      res.status(400).json({ error: "Faltan campos requeridos" });
+      return;
+    }
+
+    if (!archivo) {
+      res.status(400).json({ error: "Archivo no recibido" });
+      return;
     }
 
     if (isNaN(Number(candidato_id)) || isNaN(Number(documento_id))) {
-      res.status(400).json({
-        error: "candidato_id y documento_id deben ser números válidos",
-      });
+      res.status(400).json({ error: "ID inválido de candidato o documento" });
       return;
     }
 
-    if (!req.file) {
-      res.status(400).json({ error: "Archivo es requerido" });
+    const cleanRUT = rut.replace(/[^0-9kK]/g, "");
+    if (!/^\d{1,8}[kK\d]$/.test(cleanRUT.replace("-", ""))) {
+      res.status(400).json({ error: "Formato de RUT inválido" });
       return;
     }
 
-    // ... resto de la lógica ...
+    const uploadDir = path.join(__dirname, "../uploads", cleanRUT);
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
 
-    const cleanRUT = rut.replace(/[^0-9kK-]/g, "");
-    const ruta = `/uploads/${cleanRUT}/${req.file.filename}`;
+    const ext = path.extname(archivo.originalname).toLowerCase();
+    const filename = `file-${Date.now()}-${Math.round(
+      Math.random() * 1e9
+    )}${ext}`;
+    const fullPath = path.join(uploadDir, filename);
 
+    fs.writeFileSync(fullPath, archivo.buffer);
+
+    const ruta = `/uploads/${cleanRUT}/${filename}`;
     const nuevo = await DocumentoCandidato.create({
       candidato_id: Number(candidato_id),
       documento_id: Number(documento_id),
+      nombre: filename,
+      nombre_para_mostrar,
       ruta,
     });
 
-    res.status(201).json(nuevo);
+    res.status(201).json({ mensaje: "Documento guardado", documento: nuevo });
   } catch (error: any) {
     if (error.name === "SequelizeForeignKeyConstraintError") {
-      res.status(400).json({
-        error: "El candidato o documento especificado no existe",
-      });
+      res.status(400).json({ error: "El candidato o documento no existe" });
     } else {
       console.error("Error en uploadCandidatoDocumento:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
-  } */
+  }
+};
+
+export const deleteFile = async (req: Request, res: Response) => {
+  const id = decryptId(req.params.id);
+
+  if (!id) {
+    res.status(400).json({ error: "ID inválido" });
+    return;
+  }
+  try {
+    const doc: any = await DocumentoCandidato.findByPk(id);
+    if (!doc) {
+      res.status(404).json({ error: "Documento no encontrado" });
+      return;
+    }
+    const rutaAbsoluta = path.join(__dirname, "..", doc.ruta);
+    if (fs.existsSync(rutaAbsoluta)) {
+      //fs.unlinkSync(rutaAbsoluta); // Elimina el archivo físico
+    }
+
+    await doc.destroy(); // Elimina el registro en la base de datos
+    res.status(200).json({ mensaje: "Documento eliminado correctamente" });
+  } catch (error) {
+    console.error("Error al eliminar documento:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
