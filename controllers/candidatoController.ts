@@ -76,7 +76,7 @@ export const updateCandidato = async (req: Request, res: Response) => {
     });
 
     const idsActuales = cargosActuales.map((c: any) => c.cargo_id).sort();
-    const idsNuevos = nuevosCargos.map(Number).sort();
+    const idsNuevos = nuevosCargos.map((c: any) => c.id).sort();
 
     // Compare arrays efficiently
     const cargosHanCambiado = !(

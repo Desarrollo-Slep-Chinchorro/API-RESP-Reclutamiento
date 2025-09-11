@@ -82,7 +82,7 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign(
       { id: user.id, usuario: user.usuario, rol: user.rol },
       jwtSecret,
-      { expiresIn: "2h" }
+      { expiresIn: "4h" }
     );
 
     const candidato = await Candidato.findOne({
