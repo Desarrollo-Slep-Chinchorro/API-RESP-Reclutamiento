@@ -12,6 +12,10 @@ import EstadoCivil from "./estado_civil";
 import Nacionalidad from "./nacionalidad";
 import TituloProfesional from "./titulo_profesional";
 import Usuario from "./usuario";
+import Institucion from "./institucion";
+import Ciudad from "./ciudad";
+import EstadoConvocatoria from "./EstadoConvocatoria";
+import Convocatoria from "./convocatoria";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -43,6 +47,19 @@ Region.hasMany(Comuna, { foreignKey: "region_id" });
 
 Usuario.hasOne(Candidato, { foreignKey: "usuario_id" });
 Candidato.belongsTo(Usuario, { foreignKey: "usuario_id" });
+
+Convocatoria.belongsTo(Institucion, { foreignKey: "institucion_id" });
+Convocatoria.belongsTo(Cargo, { foreignKey: "cargo_id" });
+Convocatoria.belongsTo(Ciudad, { foreignKey: "cuidad_id" });
+Convocatoria.belongsTo(EstadoConvocatoria, { foreignKey: "estado_id" });
+
+Institucion.hasMany(Convocatoria, {
+  foreignKey: "institucion_id",
+});
+Ciudad.hasMany(Convocatoria, { foreignKey: "cuidad_id" });
+EstadoConvocatoria.hasMany(Convocatoria, {
+  foreignKey: "estado_id",
+});
 
 // =========================
 // Sincronización de modelos
