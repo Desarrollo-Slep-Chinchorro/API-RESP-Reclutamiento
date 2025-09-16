@@ -6,11 +6,13 @@ import {
   create,
   update,
   remove,
+  contarConvocatorias,
 } from "../controllers/convocatoriaController";
 
 const router = Router();
 
 router.get("/", getAll);
+router.get("/indices", contarConvocatorias);
 router.get("/:id", getById);
 router.post("/", create);
 router.put("/:id", update);
