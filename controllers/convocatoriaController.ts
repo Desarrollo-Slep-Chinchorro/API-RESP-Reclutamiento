@@ -5,6 +5,7 @@ import Institucion from "../models/institucion";
 import Ciudad from "../models/ciudad";
 import EstadoConvocatoria from "../models/EstadoConvocatoria";
 import Cargo from "../models/cargo";
+import { Op } from "sequelize";
 
 export const getAll = async (_req: Request, res: Response) => {
   const convocatorias = await Convocatoria.findAll({
@@ -27,6 +28,38 @@ export const create = async (req: Request, res: Response) => {
   res.status(201).json(nueva);
 };
 
+export const contarConvocatorias = async (req: Request, res: Response) => {
+  try {
+    const currentYear = new Date().getFullYear();
+
+    // 1. Disponibles (estado_id = 1)
+    const disponibles = await Convocatoria.count({
+      where: { estado_id: 1 },
+    });
+
+    // 2. Creadas en el año actual
+    const creadasEsteAnio = await Convocatoria.count({
+      where: {
+        created_at: {
+          [Op.gte]: new Date(`${currentYear}-01-01T00:00:00Z`),
+          [Op.lt]: new Date(`${currentYear + 1}-01-01T00:00:00Z`),
+        },
+      },
+    });
+
+    // 3. Registradas (todas las existentes)
+    const registradas = await Convocatoria.count();
+
+    res.json({
+      disponibles,
+      creadasEsteAnio,
+      registradas,
+    });
+  } catch (error) {
+    console.error("Error al contar convocatorias:", error);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+};
 export const update = async (req: Request, res: Response) => {
   const convocatoria = await Convocatoria.findByPk(req.params.id);
   if (!convocatoria) {

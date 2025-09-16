@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import Comuna from "../models/comuna";
 import Region from "../models/region";
 import Cargo from "../models/cargo";
+import axios from "axios";
 
 const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 export const saltRounds = 10;
@@ -22,6 +23,30 @@ async function generarUIDUnico(): Promise<string> {
   }
 
   return uid;
+}
+
+async function validarRecaptcha(token: string): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // asegúrate de tener esto en tu .env
+
+  try {
+    const response = await axios.post(
+      "https://www.google.com/recaptcha/api/siteverify",
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: token,
+        },
+      }
+    );
+
+    const { success, score, action } = response.data;
+
+    return success && score >= 0.5 && action === "login";
+  } catch (error) {
+    console.error("Error al validar reCAPTCHA:", error);
+    return false;
+  }
 }
 
 declare global {
@@ -51,13 +76,21 @@ export interface IRegisterCandidate {
   password: string;
   nombre: string;
   email?: string;
+  recaptcha: string;
 }
 
 export const login = async (req: Request, res: Response) => {
-  const { usuario, password }: ILogin = req.body;
+  const { usuario, password, recaptcha }: ILogin & { recaptcha: string } =
+    req.body;
+
+  // Validar reCAPTCHA antes de continuar
+  const esHumano = await validarRecaptcha(recaptcha);
+  if (!esHumano) {
+    res.status(403).json({ message: "Verificación reCAPTCHA fallida" });
+    return;
+  }
 
   try {
-    // Buscar usuario
     const user: any = await Usuario.findOne({ where: { usuario } });
 
     if (!user) {
@@ -65,20 +98,17 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    // Verificar estado
     if (!user.estado) {
       res.status(401).json({ message: "Usuario desactivado" });
       return;
     }
 
-    // Verificar contraseña
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       res.status(400).json({ message: "Contraseña incorrecta" });
       return;
     }
 
-    // Crear token JWT
     const token = jwt.sign(
       { id: user.id, usuario: user.usuario, rol: user.rol },
       jwtSecret,
@@ -88,22 +118,16 @@ export const login = async (req: Request, res: Response) => {
     const candidato = await Candidato.findOne({
       where: { usuario_id: user.id },
       include: [
-        {
-          model: Comuna,
-          include: [Region],
-        },
+        { model: Comuna, include: [Region] },
         {
           model: Cargo,
-          attributes: ["id", "nombre"], // Atributos específicos de Cargo
+          attributes: ["id", "nombre"],
           through: { attributes: [] },
           as: "cargos",
         },
       ],
     });
 
-    console.log("candidato", candidato);
-
-    // Excluir password en la respuesta
     const userResponse = {
       id: user.uid,
       rol: user.rol,
@@ -111,15 +135,10 @@ export const login = async (req: Request, res: Response) => {
       token,
     };
 
-    res.json({
-      user: userResponse,
-      candidato,
-    });
-    return;
+    res.json({ user: userResponse, candidato });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error en el servidor" });
-    return;
   }
 };
 
@@ -141,7 +160,15 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const registerCandidate = async (req: Request, res: Response) => {
-  const { usuario, password, nombre, email }: IRegisterCandidate = req.body;
+  const { usuario, password, nombre, email, recaptcha }: IRegisterCandidate =
+    req.body;
+
+  // Validar reCAPTCHA antes de continuar
+  const esHumano = await validarRecaptcha(recaptcha);
+  if (!esHumano) {
+    res.status(403).json({ message: "Verificación reCAPTCHA fallida" });
+    return;
+  }
 
   try {
     // Verificar si el usuario ya existe
