@@ -21,7 +21,9 @@ import TituloProfesionalRoutes from "../routes/tituloProfesionalRoute";
 import AuthRoutes from "../routes/authRoutes";
 import uploadDocumentoCandidatoRoutes from "../routes/uploadDocumentoCandidatoRoutes";
 import convocatoriaRoutes from "../routes/convocatoriasRoute";
+import mensajeRoutes from "../routes/mensajeRoutes";
 
+// Model Sync
 import { syncModels } from "./index";
 
 class Server {
@@ -50,6 +52,7 @@ class Server {
     tituloProfesional: "/api/titulos_profesionales",
     uploadCandidatoDocumento: "/api/upload_documentoCandidato",
     convocatoria: "/api/convocatorias",
+    mensajes: "/api/mensajes",
   };
 
   constructor() {
@@ -80,6 +83,7 @@ class Server {
       uploadDocumentoCandidatoRoutes
     );
     this.app.use(this.apiPath.convocatoria, convocatoriaRoutes);
+    this.app.use(this.apiPath.mensajes, mensajeRoutes);
   }
 
   async bdConnection() {
