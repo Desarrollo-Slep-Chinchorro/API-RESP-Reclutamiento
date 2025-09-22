@@ -9,6 +9,8 @@ import Comuna from "../models/comuna";
 import Region from "../models/region";
 import Cargo from "../models/cargo";
 import axios from "axios";
+import Jornada from "../models/jornada";
+import Ciudad from "../models/ciudad";
 
 const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 export const saltRounds = 10;
@@ -124,6 +126,18 @@ export const login = async (req: Request, res: Response) => {
           attributes: ["id", "nombre"],
           through: { attributes: [] },
           as: "cargos",
+        },
+        {
+          model: Jornada,
+          attributes: ["id", "nombre"],
+          through: { attributes: [] },
+          as: "jornadas",
+        },
+        {
+          model: Ciudad,
+          attributes: ["id", "nombre"],
+          through: { attributes: [] },
+          as: "ciudades",
         },
       ],
     });

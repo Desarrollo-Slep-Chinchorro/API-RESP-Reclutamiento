@@ -14,7 +14,7 @@ import ComunaRoutes from "../routes/comunaRoute";
 import RegionRoutes from "../routes/regionRoute";
 import DocumentoCandidatoRoutes from "../routes/documentoCandidatoRoute";
 import DocumentoRoutes from "../routes/documentoRoute";
-import EstadoCivilRoutes from "../routes/estadoCivilRoutes";
+import EstadoCivilRoutes from "../routes/estadoCivilRoute";
 import EstadoCandidatoRoutes from "../routes/estadoCandidatoRoute";
 import NacionaliadadRoutes from "../routes/nacionalidaRoutes";
 import TituloProfesionalRoutes from "../routes/tituloProfesionalRoute";
@@ -22,6 +22,9 @@ import AuthRoutes from "../routes/authRoutes";
 import uploadDocumentoCandidatoRoutes from "../routes/uploadDocumentoCandidatoRoutes";
 import convocatoriaRoutes from "../routes/convocatoriasRoute";
 import mensajeRoutes from "../routes/mensajeRoutes";
+import ciudadesRoutes from "../routes/ciudadesRoute";
+import jornadasRoutes from "../routes/jornadasRoute";
+import modalidadesRoutes from "../routes/modalidadesRoute";
 
 // Model Sync
 import { syncModels } from "./index";
@@ -53,6 +56,9 @@ class Server {
     uploadCandidatoDocumento: "/api/upload_documentoCandidato",
     convocatoria: "/api/convocatorias",
     mensajes: "/api/mensajes",
+    jornadas: "/api/jornadas",
+    modalidades: "/api/modalidades",
+    ciudades: "/api/ciudades",
   };
 
   constructor() {
@@ -84,6 +90,9 @@ class Server {
     );
     this.app.use(this.apiPath.convocatoria, convocatoriaRoutes);
     this.app.use(this.apiPath.mensajes, mensajeRoutes);
+    this.app.use(this.apiPath.jornadas, jornadasRoutes);
+    this.app.use(this.apiPath.modalidades, modalidadesRoutes);
+    this.app.use(this.apiPath.ciudades, ciudadesRoutes);
   }
 
   async bdConnection() {
