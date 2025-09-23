@@ -25,6 +25,7 @@ import mensajeRoutes from "../routes/mensajeRoutes";
 import ciudadesRoutes from "../routes/ciudadesRoute";
 import jornadasRoutes from "../routes/jornadasRoute";
 import modalidadesRoutes from "../routes/modalidadesRoute";
+import nivelEducacionRoutes from "../routes/nivelEducacionRoute";
 
 // Model Sync
 import { syncModels } from "./index";
@@ -59,6 +60,7 @@ class Server {
     jornadas: "/api/jornadas",
     modalidades: "/api/modalidades",
     ciudades: "/api/ciudades",
+    nivel_educacion: "/api/nivel_educacion",
   };
 
   constructor() {
@@ -93,6 +95,7 @@ class Server {
     this.app.use(this.apiPath.jornadas, jornadasRoutes);
     this.app.use(this.apiPath.modalidades, modalidadesRoutes);
     this.app.use(this.apiPath.ciudades, ciudadesRoutes);
+    this.app.use(this.apiPath.nivel_educacion, nivelEducacionRoutes);
   }
 
   async bdConnection() {
