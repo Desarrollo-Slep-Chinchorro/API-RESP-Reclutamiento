@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import Candidato from "../models/candidato";
 import CandidatosCargos from "../models/candidatos_cargos";
 import db from "../BD/connection";
+import CandidatosCiudades from "../models/candidatos_ciudades";
+import CandidatosJornadas from "../models/candidatos_jornadas";
+import CandidatosModalidades from "../models/candidatos_modalidades";
 
 export const getAllCandidatos = async (req: Request, res: Response) => {
   try {
@@ -35,7 +38,7 @@ export const getCandidatoById = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCandidato = async (req: Request, res: Response) => {
+/* export const updateCandidato = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { datos } = req.body;
   const { cargos: nuevosCargos = [], ...datosNuevos } = datos;
@@ -43,11 +46,11 @@ export const updateCandidato = async (req: Request, res: Response) => {
   console.log("id", id);
   console.log("req.body", req.body);
   console.log("nuevosCargos", nuevosCargos);
+  res.json(datos);
 
   const transaction = await db.transaction();
 
   try {
-    // 1. Get current candidate data
     const candidatoActual = await Candidato.findByPk(id, { transaction });
 
     if (!candidatoActual) {
@@ -56,12 +59,10 @@ export const updateCandidato = async (req: Request, res: Response) => {
       return;
     }
 
-    // 2. Check if candidate data has changed
     const datosHanCambiado = Object.entries(datosNuevos).some(
       ([key, nuevoValor]) => candidatoActual.get(key) !== nuevoValor
     );
 
-    // 3. Update if there are changes
     if (datosHanCambiado) {
       await Candidato.update(datosNuevos, {
         where: { id },
@@ -69,7 +70,6 @@ export const updateCandidato = async (req: Request, res: Response) => {
       });
     }
 
-    // 4. Check if positions (cargos) have changed
     const cargosActuales = await CandidatosCargos.findAll({
       where: { candidato_id: id },
       transaction,
@@ -78,14 +78,12 @@ export const updateCandidato = async (req: Request, res: Response) => {
     const idsActuales = cargosActuales.map((c: any) => c.cargo_id).sort();
     const idsNuevos = nuevosCargos.map((c: any) => c.id).sort();
 
-    // Compare arrays efficiently
     const cargosHanCambiado = !(
       idsActuales.length === idsNuevos.length &&
       idsActuales.every((val, index) => val === idsNuevos[index])
     );
 
     if (cargosHanCambiado) {
-      // Efficient bulk update using transaction
       await CandidatosCargos.destroy({
         where: { candidato_id: id },
         transaction,
@@ -104,10 +102,115 @@ export const updateCandidato = async (req: Request, res: Response) => {
 
     await transaction.commit();
 
-    // Get updated candidate with relations if needed
+    const candidatoFinal = await Candidato.findByPk(id, {
+      include: [{ model: CandidatosCargos, as: "cargos" }],
+    });
+
+    res.json(candidatoFinal);
+    return;
+  } catch (error: any) {
+    await transaction.rollback();
+    console.error("Error updating candidato:", error);
+    res.status(400).json({
+      message: "Error al actualizar candidato",
+      error: error.message,
+    });
+    return;
+  }
+}; */
+
+export const updateCandidato = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const {
+    cargos = [],
+    ciudades_seleccionadas = [],
+    jornadas_seleccionadas = [],
+    modalidades_seleccionadas = [],
+    ...datosNuevos
+  } = req.body;
+
+  const transaction = await db.transaction();
+
+  try {
+    const candidatoActual = await Candidato.findByPk(id, { transaction });
+
+    if (!candidatoActual) {
+      await transaction.rollback();
+      res.status(404).json({ message: "Candidato no encontrado" });
+      return;
+    }
+
+    // 🔍 Validar cambios en campos simples
+    const datosHanCambiado = Object.entries(datosNuevos).some(
+      ([key, nuevoValor]) => candidatoActual.get(key) !== nuevoValor
+    );
+
+    if (datosHanCambiado) {
+      await Candidato.update(datosNuevos, {
+        where: { id },
+        transaction,
+      });
+    }
+
+    // 🔄 Validar y sincronizar relaciones intermedias
+    const sincronizarRelacion = async (
+      modelo: any,
+      campo: string,
+      nuevosIds: number[]
+    ) => {
+      const actuales = await modelo.findAll({
+        where: { candidato_id: id },
+        transaction,
+      });
+
+      const actualesIds = actuales.map((r: any) => r[campo]).sort();
+      const nuevosIdsOrdenados = [...new Set(nuevosIds)].sort(); // Elimina duplicados
+
+      const hanCambiado =
+        actualesIds.length !== nuevosIdsOrdenados.length ||
+        !actualesIds.every(
+          (val: number, i: number) => val === nuevosIdsOrdenados[i]
+        );
+
+      if (hanCambiado) {
+        await modelo.destroy({ where: { candidato_id: id }, transaction });
+
+        if (nuevosIdsOrdenados.length > 0) {
+          const registros = nuevosIdsOrdenados.map((valorId: number) => ({
+            candidato_id: Number(id),
+            [campo]: valorId,
+          }));
+          await modelo.bulkCreate(registros, { transaction });
+        }
+      }
+    };
+
+    await sincronizarRelacion(CandidatosCargos, "cargo_id", cargos);
+    await sincronizarRelacion(
+      CandidatosCiudades,
+      "ciudades_id",
+      ciudades_seleccionadas
+    );
+    await sincronizarRelacion(
+      CandidatosJornadas,
+      "jornada_id",
+      jornadas_seleccionadas
+    );
+    await sincronizarRelacion(
+      CandidatosModalidades,
+      "modalidad_horaria_id",
+      modalidades_seleccionadas
+    );
+
+    await transaction.commit();
+
+    //  Ajuste: Sequelize usará el nombre del modelo si no hay alias
     const candidatoFinal = await Candidato.findByPk(id, {
       include: [
-        /* any relations you want to include */
+        { model: CandidatosCargos }, // candidato.CandidatosCargos
+        { model: CandidatosCiudades }, // candidato.CandidatosCiudades
+        { model: CandidatosJornadas }, // candidato.CandidatosJornadas
+        { model: CandidatosModalidades }, // candidato.CandidatosModalidades
       ],
     });
 

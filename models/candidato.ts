@@ -50,6 +50,10 @@ Candidato.init(
     usuario_id: { type: DataTypes.INTEGER, allowNull: false },
     fecha_nacimiento: { type: DataTypes.DATE, allowNull: true },
     presentacion: { type: DataTypes.STRING(1000), allowNull: true },
+    tipo_vacante_nuevo: { type: DataTypes.BOOLEAN, allowNull: true },
+    tipo_vacante_reemplazo: { type: DataTypes.BOOLEAN, allowNull: true },
+    categoria_funcionaria_id: { type: DataTypes.INTEGER, allowNull: true },
+    nivel_educacion_id: { type: DataTypes.INTEGER, allowNull: true },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,

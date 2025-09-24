@@ -100,6 +100,22 @@ Ciudad.belongsToMany(Candidato, {
   otherKey: "candidato_id",
 });
 
+// Relación directa con tabla intermedia para incluir registros como "cargos"
+Candidato.hasMany(CandidatosCargos, {
+  foreignKey: "candidato_id",
+});
+
+Candidato.hasMany(CandidatosCiudades, {
+  foreignKey: "candidato_id",
+});
+
+Candidato.hasMany(CandidatosJornadas, {
+  foreignKey: "candidato_id",
+});
+
+Candidato.hasMany(CandidatosModalidades, {
+  foreignKey: "candidato_id",
+});
 // =========================
 // Sincronización de modelos
 // =========================
