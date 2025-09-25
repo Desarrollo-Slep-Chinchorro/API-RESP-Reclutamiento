@@ -32,7 +32,7 @@ const Ciudad = db.define(
     },
   },
   {
-    tableName: "mensajes",
+    tableName: "mensajes_web",
     timestamps: false,
   }
 );

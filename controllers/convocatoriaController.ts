@@ -23,9 +23,13 @@ export const getById = async (req: Request, res: Response) => {
   res.json(convocatoria);
 };
 
-export const create = async (req: Request, res: Response) => {
-  const nueva = await Convocatoria.create(req.body);
-  res.status(201).json(nueva);
+export const createConvocatoria = async (req: Request, res: Response) => {
+  try {
+    const nueva = await Convocatoria.create(req.body);
+    res.status(201).json(nueva);
+  } catch (error) {
+    res.status(400).json({ mensaje: "Error al crear convocatoria", error });
+  }
 };
 
 export const contarConvocatorias = async (req: Request, res: Response) => {

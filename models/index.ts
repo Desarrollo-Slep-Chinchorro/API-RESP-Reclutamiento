@@ -55,13 +55,13 @@ Candidato.belongsTo(Usuario, { foreignKey: "usuario_id" });
 
 Convocatoria.belongsTo(Institucion, { foreignKey: "institucion_id" });
 Convocatoria.belongsTo(Cargo, { foreignKey: "cargo_id" });
-Convocatoria.belongsTo(Ciudad, { foreignKey: "cuidad_id" });
+Convocatoria.belongsTo(Ciudad, { foreignKey: "ciudad_id" });
 Convocatoria.belongsTo(EstadoConvocatoria, { foreignKey: "estado_id" });
 
 Institucion.hasMany(Convocatoria, {
   foreignKey: "institucion_id",
 });
-Ciudad.hasMany(Convocatoria, { foreignKey: "cuidad_id" });
+Ciudad.hasMany(Convocatoria, { foreignKey: "ciudad_id" });
 EstadoConvocatoria.hasMany(Convocatoria, {
   foreignKey: "estado_id",
 });

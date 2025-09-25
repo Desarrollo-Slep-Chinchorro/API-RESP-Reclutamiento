@@ -26,6 +26,8 @@ import ciudadesRoutes from "../routes/ciudadesRoute";
 import jornadasRoutes from "../routes/jornadasRoute";
 import modalidadesRoutes from "../routes/modalidadesRoute";
 import nivelEducacionRoutes from "../routes/nivelEducacionRoute";
+import institucionRoutes from "../routes/institucionRoute";
+import tipoVacanteRoutes from "../routes/tipoVacanteRoute";
 
 // Model Sync
 import { syncModels } from "./index";
@@ -61,6 +63,8 @@ class Server {
     modalidades: "/api/modalidades",
     ciudades: "/api/ciudades",
     nivel_educacion: "/api/nivel_educacion",
+    institucion: "/api/instituciones",
+    tipo_vacante: "/api/tipo_vacantes",
   };
 
   constructor() {
@@ -96,6 +100,8 @@ class Server {
     this.app.use(this.apiPath.modalidades, modalidadesRoutes);
     this.app.use(this.apiPath.ciudades, ciudadesRoutes);
     this.app.use(this.apiPath.nivel_educacion, nivelEducacionRoutes);
+    this.app.use(this.apiPath.institucion, institucionRoutes);
+    this.app.use(this.apiPath.tipo_vacante, tipoVacanteRoutes);
   }
 
   async bdConnection() {

@@ -11,7 +11,7 @@ export const getAllInstituciones = async (req: Request, res: Response) => {
   }
 };
 
-export const getCandidatoById = async (req: Request, res: Response) => {
+export const getInstitucionById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const institucion = await Institucion.findByPk(id);

@@ -18,7 +18,7 @@ const Convocatoria = db.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    cuidad_id: {
+    ciudad_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
@@ -43,6 +43,22 @@ const Convocatoria = db.define(
       allowNull: true,
     },
     estado_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    modalidad_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    tipo_vacante_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    jornada_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    categoria_cargo_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
