@@ -54,6 +54,7 @@ Candidato.init(
     tipo_vacante_reemplazo: { type: DataTypes.BOOLEAN, allowNull: true },
     categoria_funcionaria_id: { type: DataTypes.INTEGER, allowNull: true },
     nivel_educacion_id: { type: DataTypes.INTEGER, allowNull: true },
+    especialidad: { type: DataTypes.STRING(100), allowNull: true },
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
