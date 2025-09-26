@@ -64,6 +64,7 @@ export const contarConvocatorias = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error en el servidor" });
   }
 };
+
 export const update = async (req: Request, res: Response) => {
   const convocatoria = await Convocatoria.findByPk(req.params.id);
   if (!convocatoria) {

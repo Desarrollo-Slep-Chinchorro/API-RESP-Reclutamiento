@@ -156,6 +156,8 @@ export const login = async (req: Request, res: Response) => {
       token,
     };
 
+    console.log("Candidato logged in:", candidato);
+
     res.json({ user: userResponse, candidato });
   } catch (error) {
     console.error(error);

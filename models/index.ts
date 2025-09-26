@@ -21,6 +21,7 @@ import CandidatosJornadas from "./candidatos_jornadas";
 import CandidatosCiudades from "./candidatos_ciudades";
 import Modalidades from "./modalidad";
 import CandidatosModalidades from "./candidatos_modalidades";
+import Postulacion from "./postulacion";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -57,6 +58,8 @@ Convocatoria.belongsTo(Institucion, { foreignKey: "institucion_id" });
 Convocatoria.belongsTo(Cargo, { foreignKey: "cargo_id" });
 Convocatoria.belongsTo(Ciudad, { foreignKey: "ciudad_id" });
 Convocatoria.belongsTo(EstadoConvocatoria, { foreignKey: "estado_id" });
+Postulacion.belongsTo(Candidato, { foreignKey: "candidato_id" });
+Postulacion.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });
 
 Institucion.hasMany(Convocatoria, {
   foreignKey: "institucion_id",
