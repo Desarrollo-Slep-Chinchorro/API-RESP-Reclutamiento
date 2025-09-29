@@ -5,10 +5,16 @@ import db from "../BD/connection";
 import CandidatosCiudades from "../models/candidatos_ciudades";
 import CandidatosJornadas from "../models/candidatos_jornadas";
 import CandidatosModalidades from "../models/candidatos_modalidades";
+import Modalidades from "../models/modalidad";
+import Cargo from "../models/cargo";
+import Ciudad from "../models/ciudad";
+import Jornada from "../models/jornada";
 
 export const getAllCandidatos = async (req: Request, res: Response) => {
   try {
-    const candidatos = await Candidato.findAll();
+    const candidatos = await Candidato.findAll({
+      include: [Modalidades, Cargo, Ciudad, Jornada],
+    });
     res.json(candidatos);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener candidatos", error });

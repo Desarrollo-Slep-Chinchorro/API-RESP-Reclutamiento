@@ -4,6 +4,8 @@ import { Op } from "sequelize";
 import Postulacion from "../models/postulacion";
 import Convocatoria from "../models/convocatoria";
 import Candidato from "../models/candidato";
+import Cargo from "../models/cargo";
+import Institucion from "../models/institucion";
 
 export const crearPostulacion = async (req: Request, res: Response) => {
   const { candidato_id, convocatoria_id } = req.body;
@@ -37,7 +39,14 @@ export const crearPostulacion = async (req: Request, res: Response) => {
 export const listarPostulaciones = async (_: Request, res: Response) => {
   try {
     const postulaciones = await Postulacion.findAll({
-      include: ["Candidato", "Convocatoria"],
+      include: [
+        {
+          model: Candidato,
+        },
+        {
+          model: Convocatoria,
+        },
+      ],
     });
     res.json(postulaciones);
   } catch (error) {
@@ -48,20 +57,24 @@ export const listarPostulaciones = async (_: Request, res: Response) => {
 };
 
 export const agrupadasPorConvocatoriaEstadoAsc = async (
-  _: Request,
+  req: Request,
   res: Response
 ) => {
   try {
+    let whereEstado;
+    if (req.params.estado) {
+      whereEstado = { estado_id: { [Op.lte]: req.params.estado } };
+    }
+
     const postulaciones = await Postulacion.findAll({
       include: [
         {
           model: Convocatoria,
-          where: { estado_id: { [Op.lte]: 4 } },
-          attributes: { exclude: [] },
+          where: whereEstado,
+          include: [Cargo, Institucion],
         },
         {
           model: Candidato,
-          attributes: { exclude: [] },
         },
       ],
       order: [[Convocatoria, "estado_id", "ASC"]],
@@ -74,11 +87,17 @@ export const agrupadasPorConvocatoriaEstadoAsc = async (
       const id = postulacion.convocatoria_id;
       if (!agrupadas[id]) {
         agrupadas[id] = {
-          convocatoria: postulacion.Convocatoria,
+          convocatoria: postulacion.Convocatorium,
           candidatos: [],
         };
       }
-      agrupadas[id].candidatos.push(postulacion.Candidato);
+
+      const candidatoConEstado = {
+        ...postulacion.Candidato.get({ plain: true }),
+        estado: postulacion.estado,
+      };
+
+      agrupadas[id].candidatos.push(candidatoConEstado);
     });
 
     res.json(agrupadas);
