@@ -9,11 +9,24 @@ import Modalidades from "../models/modalidad";
 import Cargo from "../models/cargo";
 import Ciudad from "../models/ciudad";
 import Jornada from "../models/jornada";
+import EstadoCivil from "../models/estado_civil";
+import nivelEducacion from "../models/nivel_educacion";
+import Nacionalidad from "../models/nacionalidad";
+import TituloProfesional from "../models/titulo_profesional";
 
 export const getAllCandidatos = async (req: Request, res: Response) => {
   try {
     const candidatos = await Candidato.findAll({
-      include: [Modalidades, Cargo, Ciudad, Jornada],
+      include: [
+        Modalidades,
+        Cargo,
+        Ciudad,
+        Jornada,
+        EstadoCivil,
+        nivelEducacion,
+        Nacionalidad,
+        TituloProfesional,
+      ],
     });
     res.json(candidatos);
   } catch (error) {
@@ -33,7 +46,9 @@ export const createCandidato = async (req: Request, res: Response) => {
 export const getCandidatoById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const candidato = await Candidato.findByPk(id);
+    const candidato = await Candidato.findByPk(id, {
+      include: [Modalidades, Cargo, Ciudad, Jornada],
+    });
     if (!candidato) {
       res.status(404).json({ message: "Candidato no encontrado" });
       return;

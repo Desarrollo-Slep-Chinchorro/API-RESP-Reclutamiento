@@ -22,6 +22,7 @@ import CandidatosCiudades from "./candidatos_ciudades";
 import Modalidades from "./modalidad";
 import CandidatosModalidades from "./candidatos_modalidades";
 import Postulacion from "./postulacion";
+import nivelEducacion from "./nivel_educacion";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -29,6 +30,7 @@ Candidato.belongsTo(EstadoCandidato, { foreignKey: "estado_candidato_id" });
 Candidato.belongsTo(Nacionalidad, { foreignKey: "nacionalidad_id" });
 Candidato.belongsTo(EstadoCivil, { foreignKey: "estado_civil_id" });
 Candidato.belongsTo(Comuna, { foreignKey: "comuna_id" });
+Candidato.belongsTo(nivelEducacion, { foreignKey: "nivel_educacion_id" });
 // Comentarios
 Comentario.belongsTo(Candidato, { foreignKey: "candidato_id" });
 Candidato.hasMany(Comentario, { foreignKey: "candidato_id" });
