@@ -33,6 +33,10 @@ Candidato.belongsTo(Comuna, { foreignKey: "comuna_id" });
 Candidato.belongsTo(nivelEducacion, { foreignKey: "nivel_educacion_id" });
 // Comentarios
 Comentario.belongsTo(Candidato, { foreignKey: "candidato_id" });
+Comentario.belongsTo(Candidato, {
+  foreignKey: "creador_id",
+  as: "responsable",
+});
 Candidato.hasMany(Comentario, { foreignKey: "candidato_id" });
 // Documentos
 DocumentoCandidato.belongsTo(Documento, { foreignKey: "documento_id" });

@@ -6,6 +6,14 @@ import Convocatoria from "../models/convocatoria";
 import Candidato from "../models/candidato";
 import Cargo from "../models/cargo";
 import Institucion from "../models/institucion";
+import Modalidades from "../models/modalidad";
+import Ciudad from "../models/ciudad";
+import Jornada from "../models/jornada";
+import Comentario from "../models/comentario";
+import EstadoCivil from "../models/estado_civil";
+import Nacionalidad from "../models/nacionalidad";
+import nivelEducacion from "../models/nivel_educacion";
+import TituloProfesional from "../models/titulo_profesional";
 
 export const crearPostulacion = async (req: Request, res: Response) => {
   const { candidato_id, convocatoria_id } = req.body;
@@ -75,6 +83,25 @@ export const agrupadasPorConvocatoriaEstadoAsc = async (
         },
         {
           model: Candidato,
+          include: [
+            Modalidades,
+            Cargo,
+            Ciudad,
+            Jornada,
+            EstadoCivil,
+            nivelEducacion,
+            Nacionalidad,
+            TituloProfesional,
+            {
+              model: Comentario,
+              include: [
+                {
+                  model: Candidato,
+                  attributes: ["nombre_completo"], // Solo este campo
+                },
+              ],
+            },
+          ],
         },
       ],
       order: [[Convocatoria, "estado_id", "ASC"]],

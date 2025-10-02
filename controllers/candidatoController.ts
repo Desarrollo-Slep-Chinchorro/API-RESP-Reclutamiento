@@ -13,6 +13,7 @@ import EstadoCivil from "../models/estado_civil";
 import nivelEducacion from "../models/nivel_educacion";
 import Nacionalidad from "../models/nacionalidad";
 import TituloProfesional from "../models/titulo_profesional";
+import Comentario from "../models/comentario";
 
 export const getAllCandidatos = async (req: Request, res: Response) => {
   try {
@@ -26,6 +27,15 @@ export const getAllCandidatos = async (req: Request, res: Response) => {
         nivelEducacion,
         Nacionalidad,
         TituloProfesional,
+        {
+          model: Comentario,
+          include: [
+            {
+              model: Candidato,
+              attributes: ["nombre_completo"], // Solo este campo
+            },
+          ],
+        },
       ],
     });
     res.json(candidatos);

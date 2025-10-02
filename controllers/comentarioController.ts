@@ -30,7 +30,10 @@ export const getComentarioById = async (req: Request, res: Response) => {
 
 export const createComentario = async (req: Request, res: Response) => {
   try {
-    const newComentario = await Comentario.create(req.body);
+    const { Candidato, ...comentario } = req.body;
+    console.log("body", comentario);
+
+    const newComentario = await Comentario.create(comentario);
     res.status(201).json(newComentario);
     return;
   } catch (error) {

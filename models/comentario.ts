@@ -7,6 +7,7 @@ const Comentario = db.define(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     candidato_id: { type: DataTypes.INTEGER, allowNull: false },
     descripcion: { type: DataTypes.TEXT, allowNull: false },
+    creador_id: { type: DataTypes.INTEGER, allowNull: false },
     created_at: { type: DataTypes.DATE, allowNull: false },
   },
   { timestamps: false }
