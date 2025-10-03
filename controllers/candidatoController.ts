@@ -14,6 +14,8 @@ import nivelEducacion from "../models/nivel_educacion";
 import Nacionalidad from "../models/nacionalidad";
 import TituloProfesional from "../models/titulo_profesional";
 import Comentario from "../models/comentario";
+import Comuna from "../models/comuna";
+import Region from "../models/region";
 
 export const getAllCandidatos = async (req: Request, res: Response) => {
   try {
@@ -57,7 +59,33 @@ export const getCandidatoById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const candidato = await Candidato.findByPk(id, {
-      include: [Modalidades, Cargo, Ciudad, Jornada],
+      include: [
+        { model: Comuna, include: [Region] },
+        {
+          model: Cargo,
+          attributes: ["id", "nombre"],
+          through: { attributes: [] },
+          as: "cargos",
+        },
+        {
+          model: Jornada,
+          attributes: ["id", "nombre"],
+          through: { attributes: [] },
+          as: "jornadas",
+        },
+        {
+          model: Ciudad,
+          attributes: ["id", "nombre"],
+          through: { attributes: [] },
+          as: "ciudades",
+        },
+        {
+          model: Modalidades,
+          attributes: ["id", "nombre"],
+          through: { attributes: [] },
+          as: "modalidades_horarias",
+        },
+      ],
     });
     if (!candidato) {
       res.status(404).json({ message: "Candidato no encontrado" });
