@@ -59,7 +59,7 @@ export const validateParams =
 
 export const uploadMemory = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 2MB
   fileFilter: (req, file, cb) => {
     const allowedExts = [".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"];
     const ext = file.originalname.toLowerCase().match(/\.\w+$/)?.[0] || "";
@@ -67,6 +67,26 @@ export const uploadMemory = multer({
     else cb(new Error(`Tipo de archivo no permitido: ${ext}`));
   },
 }).single("file");
+
+export const uploadMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  uploadMemory(req, res, (err: any) => {
+    if (err) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(400)
+          .json({ error: "El archivo excede el tamaño máximo de 5MB" });
+      }
+      return res
+        .status(400)
+        .json({ error: err.message || "Error al subir el archivo" });
+    }
+    next();
+  });
+};
 
 export function decryptId(encoded: string): string {
   const BASE62 =
