@@ -12,6 +12,10 @@ import axios from "axios";
 import Jornada from "../models/jornada";
 import Ciudad from "../models/ciudad";
 import Modalidades from "../models/modalidad";
+import {
+  generarTokenRecuperacion,
+  enviarCorreoRecuperacion,
+} from "../utils/validaciones";
 
 const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 export const saltRounds = 10;
@@ -276,5 +280,33 @@ export const registerCandidate = async (req: Request, res: Response) => {
       .status(500)
       .json({ message: "Error en el servidor durante el registro" });
     return;
+  }
+};
+
+export const recuperarClave = async (req: Request, res: Response) => {
+  const { rut } = req.body;
+
+  if (!rut || typeof rut !== "string") {
+    res.status(400).json({ message: "RUT inválido" });
+    return;
+  }
+
+  try {
+    const candidato = await Candidato.findOne({ where: { rut } });
+
+    if (!candidato || !candidato.correo) {
+      res
+        .status(404)
+        .json({ message: "No se encontró un correo asociado a ese RUT" });
+      return;
+    }
+
+    const token = generarTokenRecuperacion(candidato.id);
+    await enviarCorreoRecuperacion(candidato.correo, token);
+
+    res.json({ message: "Correo de recuperación enviado correctamente" });
+  } catch (error) {
+    console.error(" Error en recuperación:", error);
+    res.status(500).json({ message: "Error al procesar la solicitud", error });
   }
 };

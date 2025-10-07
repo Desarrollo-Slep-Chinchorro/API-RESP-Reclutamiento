@@ -7,11 +7,26 @@ import EstadoConvocatoria from "../models/EstadoConvocatoria";
 import Cargo from "../models/cargo";
 import { Op } from "sequelize";
 
-export const getAll = async (_req: Request, res: Response) => {
-  const convocatorias = await Convocatoria.findAll({
-    include: [Institucion, Ciudad, EstadoConvocatoria, Cargo],
-  });
-  res.json(convocatorias);
+export const getAll = async (req: Request, res: Response) => {
+  try {
+    const estadoQuery = req.query.estado_id;
+    const queryOptions: any = {
+      include: [Institucion, Ciudad, EstadoConvocatoria, Cargo],
+      order: [["created_at", "DESC"]],
+    };
+
+    if (estadoQuery) {
+      queryOptions.where = {
+        estado_id: { [Op.lt]: estadoQuery },
+      };
+    }
+
+    const convocatorias = await Convocatoria.findAll(queryOptions);
+    res.json(convocatorias);
+  } catch (error) {
+    console.error("❌ Error al obtener convocatorias:", error);
+    res.status(500).json({ message: "Error al obtener convocatorias", error });
+  }
 };
 
 export const getById = async (req: Request, res: Response) => {
