@@ -15,7 +15,7 @@ async function enviarCorreoPrueba() {
   try {
     const info = await transporter.sendMail({
       from: `"SLEP Chinchorro" <${process.env.MAIL_USER}>`,
-      to: "tucorreo@dominio.cl", // reemplaza por tu correo de prueba
+      to: "michael.aguirre@epchinchorro.cl", // reemplaza por tu correo de prueba
       subject: "📧 Prueba de envío institucional",
       html: `
         <h3>Correo de prueba</h3>

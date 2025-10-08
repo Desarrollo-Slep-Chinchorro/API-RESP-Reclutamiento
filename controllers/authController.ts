@@ -16,9 +16,20 @@ import {
   generarTokenRecuperacion,
   enviarCorreoRecuperacion,
 } from "../utils/validaciones";
+import { log } from "console";
 
 const jwtSecret = process.env.JWT_SECRET || "secret8key_par4desarrollo";
 export const saltRounds = 10;
+
+export const validarToken = (req: Request, res: Response) => {
+  const { token } = req.body;
+  try {
+    jwt.verify(token, process.env.JWT_SECRET!);
+    res.json({ valido: true });
+  } catch {
+    res.status(401).json({ message: "Token inválido o expirado" });
+  }
+};
 
 async function generarUIDUnico(): Promise<string> {
   let uid: string = "";
@@ -285,14 +296,26 @@ export const registerCandidate = async (req: Request, res: Response) => {
 
 export const recuperarClave = async (req: Request, res: Response) => {
   const { rut } = req.body;
+  console.log("RUT recibido:", rut);
 
   if (!rut || typeof rut !== "string") {
+    console.log("RUT inválido recibido:", rut);
+
     res.status(400).json({ message: "RUT inválido" });
     return;
   }
 
   try {
-    const candidato = await Candidato.findOne({ where: { rut } });
+    const usuario: any = await Usuario.findOne({
+      where: { usuario: rut },
+    });
+    if (!usuario.id) {
+      res.status(404).json({ message: "Usuario no encontrado" });
+      return;
+    }
+    const candidato = await Candidato.findOne({
+      where: { usuario_id: usuario.id },
+    });
 
     if (!candidato || !candidato.correo) {
       res
@@ -301,12 +324,38 @@ export const recuperarClave = async (req: Request, res: Response) => {
       return;
     }
 
-    const token = generarTokenRecuperacion(candidato.id);
+    const token = generarTokenRecuperacion(usuario.id);
+    console.log("Token generado:", token);
+
     await enviarCorreoRecuperacion(candidato.correo, token);
 
     res.json({ message: "Correo de recuperación enviado correctamente" });
   } catch (error) {
     console.error(" Error en recuperación:", error);
     res.status(500).json({ message: "Error al procesar la solicitud", error });
+  }
+};
+
+export const restablecerClave = async (req: Request, res: Response) => {
+  const { token, nuevaClave } = req.body;
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+      usuarioId: number;
+    };
+
+    const usuario: any = await Usuario.findByPk(payload.usuarioId);
+
+    if (!usuario) {
+      res.status(404).json({ message: "usuario no encontrado" });
+      return;
+    }
+
+    usuario.password = await bcrypt.hash(nuevaClave, 10);
+    await usuario.save();
+
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch {
+    res.status(401).json({ message: "Token inválido o expirado" });
   }
 };

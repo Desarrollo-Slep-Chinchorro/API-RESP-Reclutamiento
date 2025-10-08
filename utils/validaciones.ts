@@ -2,23 +2,22 @@
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.MAIL_USER, // ej: slepchinchorro@gmail.com
-    pass: process.env.MAIL_PASS, // contraseña o app password
-  },
-});
-
-export function generarTokenRecuperacion(candidatoId: number): string {
-  return jwt.sign({ candidatoId }, process.env.JWT_SECRET!, {
+export function generarTokenRecuperacion(usuarioId: number): string {
+  return jwt.sign({ usuarioId }, process.env.JWT_SECRET!, {
     expiresIn: "15m",
   });
 }
 
-// utils/recuperacionUtils.ts
 export async function enviarCorreoRecuperacion(correo: string, token: string) {
   const enlace = `${process.env.FRONTEND_URL}/restablecer-clave?token=${token}`;
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
 
   await transporter.sendMail({
     from: `"SLEP Chinchorro" <${process.env.MAIL_USER}>`,
