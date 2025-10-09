@@ -5,7 +5,10 @@ import cors from "cors";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import cron from "node-cron";
+
 // Routes
+import { cerrarConvocatoriasVencidas } from "../utils/convocatoriaScheduler";
 import CandidatoRoutes from "../routes/candidatoRoute";
 import CandidatosCargosRoutes from "../routes/candidatoCargosRoute";
 import CargoRoutes from "../routes/cargoRoute";
@@ -76,6 +79,7 @@ class Server {
     this.middlewares();
     this.routes();
     this.initializeErrorHandling();
+    this.iniciarTareasProgramadas();
   }
 
   private routes() {
@@ -150,6 +154,18 @@ class Server {
           .json({ message: err.message || "Error interno del servidor" });
       }
     );
+  }
+
+  private iniciarTareasProgramadas() {
+    cron.schedule("1 0 * * *", async () => {
+      console.log("⏰ [CRON] Revisión de convocatorias vencidas iniciada");
+      try {
+        await cerrarConvocatoriasVencidas();
+        console.log("✅ [CRON] Convocatorias cerradas correctamente");
+      } catch (error) {
+        console.error("❌ [CRON] Error al cerrar convocatorias:", error);
+      }
+    });
   }
 
   listener() {
