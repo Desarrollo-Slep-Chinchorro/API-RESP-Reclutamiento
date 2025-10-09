@@ -9,16 +9,10 @@ export const sendInstitutionalEmail = async (
   rut: string
 ): Promise<void> => {
   const transporter = nodemailer.createTransport({
-    /*     service: "gmail",
+    service: "gmail",
     auth: {
       user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS, // usa dotenv, no hardcodees
-    }, */
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: "michael.aguirre.saavedra@gmail.com",
-      pass: "M14gs4@#",
+      pass: process.env.MAIL_PASS,
     },
   });
 
@@ -35,8 +29,8 @@ export const sendInstitutionalEmail = async (
 
   // Si la verificación fue exitosa, intenta enviar
   await transporter.sendMail({
-    from: `"${name}" <${email}>`,
-    to: "michael.aguirre@epchinchorro.cl",
+    from: `"Reclutamiento WEB" <${process.env.MAIL_USER}>`,
+    to: "postulaciones@epchinchorro.cl",
     subject: "📩 Nuevo mensaje Formulario Web",
     html: `
       <div style="font-family:sans-serif;">
@@ -54,10 +48,10 @@ export const sendInstitutionalEmail = async (
 
 export const createMensaje = async (req: Request, res: Response) => {
   try {
-    const { name, email, mensaje, rut } = req.body;
+    const { nombre, correo, mensaje, rut } = req.body;
 
     //const newMensaje = await Mensaje.create(req.body);
-    await sendInstitutionalEmail(name, email, mensaje, rut);
+    await sendInstitutionalEmail(nombre, correo, mensaje, rut);
     res.status(200).json({ success: true });
     //res.status(201).json(newMensaje);
   } catch (error) {
