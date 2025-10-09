@@ -38,9 +38,9 @@ export const sendInstitutionalEmail = async (
         <p><strong>Nombre:</strong> ${name}</p>
         <p><strong>Rut:</strong> ${rut}</p>
         <p><strong>Correo:</strong> ${email}</p>
-        <p><strong>Mensaje:</strong><br>${message}</p>
+        <p><strong>Mensaje:</strong><br><br>${message}</p>
         <hr>
-        <small>Este correo fue generado automáticamente desde la plataforma institucional.</small>
+        <small>Este correo fue generado automáticamente desde la plataforma institucional de Reclutamiento Slep Chinchorro.</small>
       </div>
     `,
   });
