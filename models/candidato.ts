@@ -70,13 +70,6 @@ Candidato.init(
     sequelize: db,
     tableName: "candidatos",
     timestamps: false,
-    hooks: {
-      beforeUpdate: async (instance: Candidato) => {
-        await db.query("SELECT public.update_modified_column()");
-        // También actualiza manualmente el campo
-        instance.updated_at = new Date();
-      },
-    },
   }
 );
 export default Candidato;

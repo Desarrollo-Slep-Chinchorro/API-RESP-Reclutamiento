@@ -310,3 +310,40 @@ export const searchCandidatoByRut = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error en búsqueda de candidato", error });
   }
 };
+
+export const actualizarEstadoCandidato = async (
+  req: Request,
+  res: Response
+) => {
+  const { id } = req.params;
+  const { nuevoEstadoId } = req.body;
+
+  if (!nuevoEstadoId || isNaN(Number(nuevoEstadoId))) {
+    res.status(400).json({ message: "Estado inválido o no proporcionado" });
+    return;
+  }
+
+  try {
+    const candidato = await Candidato.findByPk(id);
+
+    if (!candidato) {
+      res.status(404).json({ message: "Candidato no encontrado" });
+      return;
+    }
+
+    // Actualizar estado
+    candidato.estado_candidato_id = nuevoEstadoId;
+    await candidato.save();
+
+    res.json({
+      message: "Estado actualizado correctamente",
+      candidato: {
+        id: candidato.id,
+        estado_candidato_id: candidato.estado_candidato_id,
+      },
+    });
+  } catch (error) {
+    console.error("Error al actualizar estado del candidato:", error);
+    res.status(500).json({ message: "Error en el servidor" });
+  }
+};
