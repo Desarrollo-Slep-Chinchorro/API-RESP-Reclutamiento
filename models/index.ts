@@ -23,6 +23,7 @@ import Modalidades from "./modalidad";
 import CandidatosModalidades from "./candidatos_modalidades";
 import Postulacion from "./postulacion";
 import nivelEducacion from "./nivel_educacion";
+import CategoriaCargo from "./categoria_cargos";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -43,6 +44,9 @@ DocumentoCandidato.belongsTo(Documento, { foreignKey: "documento_id" });
 DocumentoCandidato.belongsTo(Candidato, { foreignKey: "candidato_id" });
 Candidato.hasMany(DocumentoCandidato, { foreignKey: "candidato_id" });
 // Roles cargos
+Cargo.belongsTo(CategoriaCargo, { foreignKey: "tipo_cargo_id" });
+CategoriaCargo.hasMany(Cargo, { foreignKey: "tipo_cargo_id" });
+
 Candidato.belongsToMany(Cargo, {
   through: CandidatosCargos,
   foreignKey: "candidato_id",

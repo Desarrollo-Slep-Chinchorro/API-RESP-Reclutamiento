@@ -35,6 +35,7 @@ import postulacionRoutes from "../routes/postulacionRoute";
 
 // Model Sync
 import { syncModels } from "./index";
+import CategoriaCargo from "../routes/categoriaCargoRoute";
 
 class Server {
   private app: Application;
@@ -70,6 +71,7 @@ class Server {
     institucion: "/api/instituciones",
     tipo_vacante: "/api/tipo_vacantes",
     postulaciones: "/api/postulaciones",
+    CategoriaCargo: "/api/categoria_cargos",
   };
 
   constructor() {
@@ -109,6 +111,7 @@ class Server {
     this.app.use(this.apiPath.institucion, institucionRoutes);
     this.app.use(this.apiPath.tipo_vacante, tipoVacanteRoutes);
     this.app.use(this.apiPath.postulaciones, postulacionRoutes);
+    this.app.use(this.apiPath.CategoriaCargo, CategoriaCargo);
   }
 
   async bdConnection() {
