@@ -6,12 +6,23 @@ import Ciudad from "../models/ciudad";
 import EstadoConvocatoria from "../models/EstadoConvocatoria";
 import Cargo from "../models/cargo";
 import { Op } from "sequelize";
+import Jornada from "../models/jornada";
+import Modalidades from "../models/modalidad";
+import tipoVacante from "../models/tipoVacante";
 
 export const getAll = async (req: Request, res: Response) => {
   try {
     const estadoQuery = req.query.estado_id;
     const queryOptions: any = {
-      include: [Institucion, Ciudad, EstadoConvocatoria, Cargo],
+      include: [
+        Institucion,
+        Ciudad,
+        EstadoConvocatoria,
+        Cargo,
+        Jornada,
+        Modalidades,
+        tipoVacante,
+      ],
       order: [["created_at", "DESC"]],
     };
 

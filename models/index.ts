@@ -24,6 +24,7 @@ import CandidatosModalidades from "./candidatos_modalidades";
 import Postulacion from "./postulacion";
 import nivelEducacion from "./nivel_educacion";
 import CategoriaCargo from "./categoria_cargos";
+import tipoVacante from "./tipoVacante";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -68,6 +69,10 @@ Convocatoria.belongsTo(Institucion, { foreignKey: "institucion_id" });
 Convocatoria.belongsTo(Cargo, { foreignKey: "cargo_id" });
 Convocatoria.belongsTo(Ciudad, { foreignKey: "ciudad_id" });
 Convocatoria.belongsTo(EstadoConvocatoria, { foreignKey: "estado_id" });
+Convocatoria.belongsTo(Jornada, { foreignKey: "jornada_id" });
+Convocatoria.belongsTo(Modalidades, { foreignKey: "modalidad_id" });
+Convocatoria.belongsTo(tipoVacante, { foreignKey: "tipo_vacante_id" });
+
 Postulacion.belongsTo(Candidato, { foreignKey: "candidato_id" });
 Postulacion.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });
 
