@@ -35,7 +35,7 @@ export const getAll = async (req: Request, res: Response) => {
     const convocatorias = await Convocatoria.findAll(queryOptions);
     res.json(convocatorias);
   } catch (error) {
-    console.error("❌ Error al obtener convocatorias:", error);
+    console.error(" Error al obtener convocatorias:", error);
     res.status(500).json({ message: "Error al obtener convocatorias", error });
   }
 };

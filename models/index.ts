@@ -72,6 +72,7 @@ Convocatoria.belongsTo(EstadoConvocatoria, { foreignKey: "estado_id" });
 Convocatoria.belongsTo(Jornada, { foreignKey: "jornada_id" });
 Convocatoria.belongsTo(Modalidades, { foreignKey: "modalidad_id" });
 Convocatoria.belongsTo(tipoVacante, { foreignKey: "tipo_vacante_id" });
+Convocatoria.hasMany(Postulacion, { foreignKey: "convocatoria_id" });
 
 Postulacion.belongsTo(Candidato, { foreignKey: "candidato_id" });
 Postulacion.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });

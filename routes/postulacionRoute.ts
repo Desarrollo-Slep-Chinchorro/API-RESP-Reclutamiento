@@ -9,5 +9,6 @@ const router = Router();
 
 router.post("/", crearPostulacion);
 router.get("/", listarPostulaciones);
-router.get("/agrupadas/estado/:estado", agrupadasPorConvocatoriaEstadoAsc);
+router.get("/agrupadas/:estado", agrupadasPorConvocatoriaEstadoAsc);
+
 export default router;
