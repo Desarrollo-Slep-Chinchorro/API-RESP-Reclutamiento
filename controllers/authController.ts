@@ -15,6 +15,7 @@ import Modalidades from "../models/modalidad";
 import {
   generarTokenRecuperacion,
   enviarCorreoRecuperacion,
+  enviarCorreoRecuperacionResend,
 } from "../utils/validaciones";
 import { log } from "console";
 
@@ -331,7 +332,8 @@ export const recuperarClave = async (req: Request, res: Response) => {
     console.log(`[RecuperarClave] Token generado: ${token}`);
 
     try {
-      await enviarCorreoRecuperacion(correo, token);
+      //await enviarCorreoRecuperacion(correo, token);;
+      await enviarCorreoRecuperacionResend(correo, token);
       console.log(`[RecuperarClave] Correo enviado a: ${correo}`);
     } catch (correoError) {
       console.error(`[RecuperarClave] Error al enviar correo:`, correoError);
