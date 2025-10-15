@@ -13,7 +13,7 @@ export async function enviarCorreoRecuperacion(correo: string, token: string) {
 
   console.log("Preparando envío a:", correo);
   console.log("SMTP usuario:", process.env.MAIL_USER);
-  console.log("SMTP pass:", process.env.MAIL_PASS ? "****" : "No definido");
+  console.log("SMTP pass:", process.env.MAIL_PASS);
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
