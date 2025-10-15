@@ -64,7 +64,11 @@ export const contarConvocatorias = async (req: Request, res: Response) => {
 
     // 1. Disponibles (estado_id = 1)
     const disponibles = await Convocatoria.count({
-      where: { estado_id: 1 },
+      where: {
+        estado_id: {
+          [Op.lte]: 3,
+        },
+      },
     });
 
     // 2. Creadas en el año actual

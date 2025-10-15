@@ -296,11 +296,8 @@ export const registerCandidate = async (req: Request, res: Response) => {
 
 export const recuperarClave = async (req: Request, res: Response) => {
   const { rut } = req.body;
-  console.log("RUT recibido:", rut);
 
   if (!rut || typeof rut !== "string") {
-    console.log("RUT inválido recibido:", rut);
-
     res.status(400).json({ message: "RUT inválido" });
     return;
   }
@@ -308,16 +305,15 @@ export const recuperarClave = async (req: Request, res: Response) => {
   try {
     const usuario: any = await Usuario.findOne({
       where: { usuario: rut },
+      include: [Candidato],
     });
+
     if (!usuario.id) {
       res.status(404).json({ message: "Usuario no encontrado" });
       return;
     }
-    const candidato = await Candidato.findOne({
-      where: { usuario_id: usuario.id },
-    });
 
-    if (!candidato || !candidato.correo) {
+    if (!usuario.Candidato || !usuario.Candidato.correo) {
       res
         .status(404)
         .json({ message: "No se encontró un correo asociado a ese RUT" });
@@ -325,9 +321,8 @@ export const recuperarClave = async (req: Request, res: Response) => {
     }
 
     const token = generarTokenRecuperacion(usuario.id);
-    console.log("Token generado:", token);
 
-    await enviarCorreoRecuperacion(candidato.correo, token);
+    await enviarCorreoRecuperacion(usuario.Candidato.correo, token);
 
     res.json({ message: "Correo de recuperación enviado correctamente" });
   } catch (error) {
