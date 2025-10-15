@@ -303,17 +303,24 @@ export const recuperarClave = async (req: Request, res: Response) => {
   }
 
   try {
+    console.log(`[RecuperarClave] Buscando usuario con RUT: ${rut}`);
+
     const usuario: any = await Usuario.findOne({
       where: { usuario: rut },
       include: [Candidato],
     });
 
-    if (!usuario.id) {
+    if (!usuario || !usuario.id) {
+      console.warn(`[RecuperarClave] Usuario no encontrado para RUT: ${rut}`);
       res.status(404).json({ message: "Usuario no encontrado" });
       return;
     }
 
-    if (!usuario.Candidato || !usuario.Candidato.correo) {
+    const correo = usuario.Candidato?.correo;
+    if (!correo) {
+      console.warn(
+        `[RecuperarClave] Candidato sin correo para usuario ID: ${usuario.id}`
+      );
       res
         .status(404)
         .json({ message: "No se encontró un correo asociado a ese RUT" });
@@ -321,13 +328,31 @@ export const recuperarClave = async (req: Request, res: Response) => {
     }
 
     const token = generarTokenRecuperacion(usuario.id);
+    console.log(`[RecuperarClave] Token generado: ${token}`);
 
-    await enviarCorreoRecuperacion(usuario.Candidato.correo, token);
+    try {
+      await enviarCorreoRecuperacion(correo, token);
+      console.log(`[RecuperarClave] Correo enviado a: ${correo}`);
+    } catch (correoError) {
+      console.error(`[RecuperarClave] Error al enviar correo:`, correoError);
+      res.status(503).json({
+        message:
+          "No se pudo enviar el correo de recuperación. Intente más tarde.",
+      });
+      return;
+    }
 
-    res.json({ message: "Correo de recuperación enviado correctamente" });
-  } catch (error) {
-    console.error(" Error en recuperación:", error);
-    res.status(500).json({ message: "Error al procesar la solicitud", error });
+    res.json({
+      message: "Correo de recuperación enviado correctamente",
+    });
+    return;
+  } catch (error: any) {
+    console.error(`[RecuperarClave] Error inesperado:`, error);
+    res.status(500).json({
+      message: "Error interno del servidor",
+      detalle: error.message,
+    });
+    return;
   }
 };
 
