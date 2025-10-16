@@ -45,12 +45,11 @@ export async function enviarCorreoRecuperacion(correo: string, token: string) {
   }
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function enviarCorreoRecuperacionResend(
   correo: string,
   token: string
 ) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const enlace = `${process.env.FRONTEND_URL}/restablecer-clave?token=${token}`;
 
   await resend.emails.send({
