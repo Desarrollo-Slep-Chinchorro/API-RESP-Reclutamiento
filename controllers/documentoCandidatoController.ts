@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import DocumentoCandidato from "../models/documentos_candidato";
+import Documento from "../models/documento";
 
 export const getAllDocumentosCandidato = async (
   _req: Request,
@@ -112,5 +113,48 @@ export const deleteDocumentoCandidato = async (req: Request, res: Response) => {
       .status(500)
       .json({ message: "Error al eliminar documento de candidato", error });
     return;
+  }
+};
+
+export const documentosFaltantesPorFase = async (
+  req: Request,
+  res: Response
+) => {
+  const candidatoId = parseInt(req.params.id);
+  const fase = parseInt(req.params.fase);
+
+  if (isNaN(candidatoId) || isNaN(fase)) {
+    return res.status(400).json({ error: "Parámetros inválidos" });
+  }
+
+  try {
+    // 1. Obtener todos los documentos requeridos en la fase
+    const requeridos = await Documento.findAll({
+      where: { fase_candidato: fase },
+      attributes: ["id", "nombre"],
+    });
+
+    // 2. Obtener todos los documentos que el candidato ya cargó
+    const cargados = await DocumentoCandidato.findAll({
+      where: { candidato_id: candidatoId },
+      attributes: ["documento_id"],
+    });
+
+    const idsCargados = cargados.map((doc: any) => doc.documento_id);
+
+    // 3. Filtrar los que faltan
+    const faltantes = requeridos.filter(
+      (doc: any) => !idsCargados.includes(doc.id)
+    );
+
+    return res.json({
+      candidato_id: candidatoId,
+      fase,
+      faltantes,
+      total_faltantes: faltantes.length,
+    });
+  } catch (error) {
+    console.error("Error al obtener documentos faltantes:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
