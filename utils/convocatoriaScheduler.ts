@@ -7,7 +7,7 @@ export async function cerrarConvocatoriasVencidas() {
   const vencidas = await Convocatoria.findAll({
     where: {
       estado_id: { [Op.ne]: 4 }, // evita duplicar cierre
-      fecha_cierre: { [Op.lte]: hoy },
+      fecha_cierre: { [Op.lt]: hoy },
     },
   });
 
@@ -15,7 +15,7 @@ export async function cerrarConvocatoriasVencidas() {
     (convocatoria as any).estado_id = 4; // Finalizada
     await convocatoria.save();
     console.log(
-      `📌 Convocatoria ${(convocatoria as any).id} cerrada automáticamente`
+      `Convocatoria ${(convocatoria as any).id} cerrada automáticamente`
     );
   }
 }
