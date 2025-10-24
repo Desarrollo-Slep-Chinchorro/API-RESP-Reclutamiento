@@ -15,6 +15,7 @@ import Nacionalidad from "../models/nacionalidad";
 import nivelEducacion from "../models/nivel_educacion";
 import TituloProfesional from "../models/titulo_profesional";
 import EstadoConvocatoria from "../models/EstadoConvocatoria";
+import CartaOferta from "../models/carta_oferta";
 
 export const crearPostulacion = async (req: Request, res: Response) => {
   const { candidato_id, convocatoria_id } = req.body;
@@ -181,6 +182,10 @@ export const agrupadasPorConvocatoriaEstadoAsc = async (
         {
           model: EstadoConvocatoria,
           as: "estado_convocatorium", // Mantén este nombre
+        },
+        {
+          model: CartaOferta,
+          required: false,
         },
         {
           model: Postulacion,

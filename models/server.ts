@@ -32,6 +32,7 @@ import nivelEducacionRoutes from "../routes/nivelEducacionRoute";
 import institucionRoutes from "../routes/institucionRoute";
 import tipoVacanteRoutes from "../routes/tipoVacanteRoute";
 import postulacionRoutes from "../routes/postulacionRoute";
+import cartaOfertaRoutes from "../routes/cartasOfertasRoute";
 
 // Model Sync
 import { syncModels } from "./index";
@@ -72,6 +73,7 @@ class Server {
     tipo_vacante: "/api/tipo_vacantes",
     postulaciones: "/api/postulaciones",
     CategoriaCargo: "/api/categoria_cargos",
+    cartaOferta: "/api/cartas_ofertas",
   };
 
   constructor() {
@@ -112,6 +114,7 @@ class Server {
     this.app.use(this.apiPath.tipo_vacante, tipoVacanteRoutes);
     this.app.use(this.apiPath.postulaciones, postulacionRoutes);
     this.app.use(this.apiPath.CategoriaCargo, CategoriaCargo);
+    this.app.use(this.apiPath.cartaOferta, cartaOfertaRoutes);
   }
 
   async bdConnection() {

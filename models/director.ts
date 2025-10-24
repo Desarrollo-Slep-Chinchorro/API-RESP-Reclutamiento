@@ -1,13 +1,18 @@
 import { DataTypes } from "sequelize";
 import db from "../BD/connection";
 
-const Institucion = db.define(
-  "instituciones",
+const Director = db.define(
+  "directores",
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+    rut: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     nombre: {
       type: DataTypes.STRING,
@@ -15,24 +20,20 @@ const Institucion = db.define(
     },
     correo: {
       type: DataTypes.STRING,
-      allowNull: true, // Puede ser null si no siempre hay correo
+      allowNull: true,
       validate: {
         isEmail: true,
       },
     },
-    ciudad_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    director_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
+    estado: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
   },
   {
-    tableName: "instituciones",
+    tableName: "directores",
     timestamps: false,
   }
 );
 
-export default Institucion;
+export default Director;

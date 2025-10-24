@@ -25,6 +25,8 @@ import Postulacion from "./postulacion";
 import nivelEducacion from "./nivel_educacion";
 import CategoriaCargo from "./categoria_cargos";
 import tipoVacante from "./tipoVacante";
+import CartaOferta from "./carta_oferta";
+import Director from "./director";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -73,6 +75,7 @@ Convocatoria.belongsTo(Jornada, { foreignKey: "jornada_id" });
 Convocatoria.belongsTo(Modalidades, { foreignKey: "modalidad_id" });
 Convocatoria.belongsTo(tipoVacante, { foreignKey: "tipo_vacante_id" });
 Convocatoria.hasMany(Postulacion, { foreignKey: "convocatoria_id" });
+Convocatoria.hasMany(CartaOferta, { foreignKey: "convocatoria_id" });
 
 Postulacion.belongsTo(Candidato, { foreignKey: "candidato_id" });
 Postulacion.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });
@@ -135,6 +138,15 @@ Candidato.hasMany(CandidatosJornadas, {
 Candidato.hasMany(CandidatosModalidades, {
   foreignKey: "candidato_id",
 });
+
+Institucion.belongsTo(Director, { foreignKey: "director_id" });
+
+CartaOferta.belongsTo(Candidato, { foreignKey: "candidato_id" });
+CartaOferta.belongsTo(Cargo, { foreignKey: "cargo_id" });
+CartaOferta.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });
+CartaOferta.belongsTo(Institucion, { foreignKey: "institucion_id" });
+CartaOferta.belongsTo(Jornada, { foreignKey: "jornada_id" });
+
 // =========================
 // Sincronización de modelos
 // =========================
