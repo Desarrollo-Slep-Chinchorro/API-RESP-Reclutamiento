@@ -9,14 +9,25 @@ export function generarTokenRecuperacion(usuarioId: number): string {
   });
 }
 
-export async function enviarCorreoRecuperacion(correo: string, token: string) {
-  const enlace = `${process.env.FRONTEND_URL}/restablecer-clave?token=${token}`;
+export function generarTokenAprobacion(carta_id: number): string {
+  return jwt.sign({ carta_id }, process.env.JWT_SECRET!, {
+    expiresIn: "2d",
+  });
+}
 
-  console.log("Preparando envío a:", correo);
-  console.log("SMTP usuario:", process.env.MAIL_USER);
-  console.log("SMTP pass:", process.env.MAIL_PASS);
+export function validarTokenAprobacion(token: string): any {
+  try {
+    console.log("Validando token de aprobación:", token);
+    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    return payload;
+  } catch (error) {
+    console.error("Error al validar token de aprobación:", error);
+    return null;
+  }
+}
 
-  const transporter = nodemailer.createTransport({
+async function transport() {
+  return nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.MAIL_USER,
@@ -24,6 +35,16 @@ export async function enviarCorreoRecuperacion(correo: string, token: string) {
     },
     connectionTimeout: 10000, // 10 segundos
   });
+}
+
+export async function enviarCorreoRecuperacion(correo: string, token: string) {
+  const enlace = `${process.env.FRONTEND_URL}/restablecer-clave?token=${token}`;
+
+  console.log("Preparando envío a:", correo);
+  console.log("SMTP usuario:", process.env.MAIL_USER);
+  console.log("SMTP pass:", process.env.MAIL_PASS);
+
+  const transporter = await transport();
 
   try {
     await transporter.sendMail({
@@ -44,6 +65,29 @@ export async function enviarCorreoRecuperacion(correo: string, token: string) {
     throw new Error("Fallo en el envío de correo");
   }
 }
+
+export const enviarCorreo_para_Aprobacion = async (
+  CartaOferta: any,
+  token: string
+) => {
+  const enlace = `${process.env.FRONTEND_URL}/aprobar-carta?token=${token}`;
+
+  const transporter = await transport();
+
+  await transporter.sendMail({
+    from: '"SLEP Chinchorro" <no-reply@slepchinchorro.cl>',
+    to: CartaOferta.institucione.directore.correo,
+    subject: "Carta Oferta para aprobación",
+    html: `
+      <p>Estimada/o ${CartaOferta.institucione.directore.nombre},</p>
+      <p>Se ha generado una carta oferta para su revisión y aprobación.</p>
+      <p><a href="${enlace}">Haga clic aquí para aprobar la carta</a></p>
+      <p>Este enlace estará disponible por 2 días corrido a partir de la fecha de emisión de este correo.</p>
+    `,
+  });
+
+  console.log("✅ Correo enviado correctamente");
+};
 
 export async function enviarCorreoRecuperacionResend(
   correo: string,

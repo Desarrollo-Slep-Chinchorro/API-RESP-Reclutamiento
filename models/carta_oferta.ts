@@ -49,6 +49,10 @@ const CartaOferta = db.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    horas_pactadas: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "cartas_ofertas",
