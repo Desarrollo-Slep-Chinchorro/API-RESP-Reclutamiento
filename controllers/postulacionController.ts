@@ -66,6 +66,26 @@ export const listarPostulaciones = async (_: Request, res: Response) => {
   }
 };
 
+export const updatePostulacionCandidato = async (
+  req: Request,
+  res: Response
+) => {
+  const { id } = req.params;
+  try {
+    const [updated] = await Postulacion.update(req.body, { where: { id } });
+    if (!updated) {
+      res.status(404).json({ message: "Postulacion no encontrada" });
+      return;
+    }
+    const updatedPostulacion = await Postulacion.findByPk(id);
+    res.json(updatedPostulacion);
+    return;
+  } catch (error) {
+    res.status(400).json({ message: "Error al actualizar comuna", error });
+    return;
+  }
+};
+
 /* export const agrupadasPorConvocatoriaEstadoAsc = async (
   req: Request,
   res: Response

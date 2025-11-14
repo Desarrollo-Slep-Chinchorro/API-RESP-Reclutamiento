@@ -77,16 +77,16 @@ export const enviarCorreo_para_Aprobacion = async (
   await transporter.sendMail({
     from: '"SLEP Chinchorro" <no-reply@slepchinchorro.cl>',
     to: CartaOferta.institucione.directore.correo,
-    subject: "Carta Oferta para aprobación",
+    subject: "Carta Oferta - Necesita su aprobación",
     html: `
       <p>Estimada/o ${CartaOferta.institucione.directore.nombre},</p>
       <p>Se ha generado una carta oferta para su revisión y aprobación.</p>
+      <p>NOTA: Este enlace estará disponible solo por 48 hrs. corridas a partir de la fecha de emisión de este correo.</p>
       <p><a href="${enlace}">Haga clic aquí para aprobar la carta</a></p>
-      <p>Este enlace estará disponible por 2 días corrido a partir de la fecha de emisión de este correo.</p>
     `,
   });
 
-  console.log("✅ Correo enviado correctamente");
+  console.log("Correo enviado correctamente");
 };
 
 export async function enviarCorreoRecuperacionResend(

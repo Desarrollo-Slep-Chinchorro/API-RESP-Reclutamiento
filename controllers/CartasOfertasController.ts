@@ -12,11 +12,22 @@ import {
   generarTokenAprobacion,
   validarTokenAprobacion,
 } from "../utils/validaciones";
+import EstadoCartaOferta from "../models/estado_cartaOferta";
 
 const CartasOfertasController = {
   async listar(req: Request, res: Response) {
     try {
-      const cartas = await CartaOferta.findAll();
+      const { estado } = req.query;
+
+      const where: any = {};
+      if (estado) {
+        where.estado = estado;
+      }
+
+      const cartas = await CartaOferta.findAll({
+        where,
+        include: [Candidato, Institucion, Cargo, EstadoCartaOferta],
+      });
       res.json(cartas);
     } catch (error) {
       console.error("Error al listar cartas:", error);
@@ -81,9 +92,14 @@ const CartasOfertasController = {
         const sendToken = generarTokenAprobacion(carta.id);
         await enviarCorreo_para_Aprobacion(carta, sendToken);
       }
-      if (dato_envio == 2) {
+      if (dato_envio === 2) {
         datos.fecha_apr_director = new Date();
         datos.estado = 3;
+      }
+      if (dato_envio === 3) {
+        datos.estado = 4;
+        datos.fecha_envio_dir = null;
+        datos.fecha_apr_director = null;
       }
       await carta.update(datos);
       res.json(carta);

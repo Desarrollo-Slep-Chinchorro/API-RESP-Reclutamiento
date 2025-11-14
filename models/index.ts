@@ -27,6 +27,7 @@ import CategoriaCargo from "./categoria_cargos";
 import tipoVacante from "./tipoVacante";
 import CartaOferta from "./carta_oferta";
 import Director from "./director";
+import EstadoCartaOferta from "./estado_cartaOferta";
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });
@@ -144,6 +145,7 @@ Institucion.belongsTo(Director, { foreignKey: "director_id" });
 CartaOferta.belongsTo(Candidato, { foreignKey: "candidato_id" });
 CartaOferta.belongsTo(Cargo, { foreignKey: "cargo_id" });
 CartaOferta.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });
+CartaOferta.belongsTo(EstadoCartaOferta, { foreignKey: "estado" });
 CartaOferta.belongsTo(Institucion, { foreignKey: "institucion_id" });
 CartaOferta.belongsTo(Jornada, { foreignKey: "jornada_id" });
 

@@ -34,6 +34,10 @@ const Postulacion = db.define(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
+    estado_candidato: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1,
+    },
   },
   {
     tableName: "postulaciones",
