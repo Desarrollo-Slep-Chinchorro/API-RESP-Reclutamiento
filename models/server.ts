@@ -33,6 +33,7 @@ import institucionRoutes from "../routes/institucionRoute";
 import tipoVacanteRoutes from "../routes/tipoVacanteRoute";
 import postulacionRoutes from "../routes/postulacionRoute";
 import cartaOfertaRoutes from "../routes/cartasOfertasRoute";
+import firmmantesRoutes from "../routes/FirmanteRoute";
 
 // Model Sync
 import { syncModels } from "./index";
@@ -74,6 +75,7 @@ class Server {
     postulaciones: "/api/postulaciones",
     CategoriaCargo: "/api/categoria_cargos",
     cartaOferta: "/api/cartas_ofertas",
+    firmantes: "/api/firmantes",
   };
 
   constructor() {
@@ -115,6 +117,7 @@ class Server {
     this.app.use(this.apiPath.postulaciones, postulacionRoutes);
     this.app.use(this.apiPath.CategoriaCargo, CategoriaCargo);
     this.app.use(this.apiPath.cartaOferta, cartaOfertaRoutes);
+    this.app.use(this.apiPath.firmantes, firmmantesRoutes);
   }
 
   async bdConnection() {

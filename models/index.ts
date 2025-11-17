@@ -141,6 +141,7 @@ Candidato.hasMany(CandidatosModalidades, {
 });
 
 Institucion.belongsTo(Director, { foreignKey: "director_id" });
+Institucion.belongsTo(Ciudad, { foreignKey: "ciudad_id" });
 
 CartaOferta.belongsTo(Candidato, { foreignKey: "candidato_id" });
 CartaOferta.belongsTo(Cargo, { foreignKey: "cargo_id" });

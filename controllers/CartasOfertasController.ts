@@ -13,6 +13,10 @@ import {
   validarTokenAprobacion,
 } from "../utils/validaciones";
 import EstadoCartaOferta from "../models/estado_cartaOferta";
+import EstadoCivil from "../models/estado_civil";
+import Nacionalidad from "../models/nacionalidad";
+import Ciudad from "../models/ciudad";
+import CategoriaCargo from "../models/categoria_cargos";
 
 const CartasOfertasController = {
   async listar(req: Request, res: Response) {
@@ -39,13 +43,16 @@ const CartasOfertasController = {
     try {
       const carta = await CartaOferta.findByPk(req.params.id, {
         include: [
-          Cargo,
+          { model: Cargo, include: [CategoriaCargo] },
           Jornada,
-          Candidato,
+          {
+            model: Candidato,
+            include: [EstadoCivil, Nacionalidad],
+          },
           Convocatoria,
           {
             model: Institucion,
-            include: [Director],
+            include: [Director, Ciudad],
           },
         ],
       });
