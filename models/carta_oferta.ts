@@ -53,6 +53,14 @@ const CartaOferta = db.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    fecha_apr_candidato: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    fecha_envio_candidato: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     tableName: "cartas_ofertas",

@@ -21,11 +21,11 @@ import CategoriaCargo from "../models/categoria_cargos";
 const CartasOfertasController = {
   async listar(req: Request, res: Response) {
     try {
-      const { estado } = req.query;
+      const { est } = req.query;
 
       const where: any = {};
-      if (estado) {
-        where.estado = estado;
+      if (est) {
+        where.estado = est;
       }
 
       const cartas = await CartaOferta.findAll({
