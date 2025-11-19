@@ -109,6 +109,8 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
+  //texto de prueba
+
   try {
     const user: any = await Usuario.findOne({ where: { usuario } });
 
