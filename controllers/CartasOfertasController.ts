@@ -87,6 +87,9 @@ const CartasOfertasController = {
             model: Institucion,
             include: [Director],
           },
+          {
+            model: Candidato,
+          },
         ],
       });
       if (!carta) {
@@ -94,19 +97,38 @@ const CartasOfertasController = {
         return;
       }
       if (dato_envio === 1) {
+        //Enviar Al director
         datos.fecha_envio_dir = new Date();
         datos.estado = 2;
         const sendToken = generarTokenAprobacion(carta.id);
-        await enviarCorreo_para_Aprobacion(carta, sendToken);
+        await enviarCorreo_para_Aprobacion(
+          "D1r",
+          carta.institucione.directore.correo,
+          carta.institucione.directore.nombre,
+          sendToken
+        );
       }
       if (dato_envio === 2) {
+        //Aprueba Director
         datos.fecha_apr_director = new Date();
         datos.estado = 3;
       }
       if (dato_envio === 3) {
+        //Anular Carta Oferta
         datos.estado = 4;
         datos.fecha_envio_dir = null;
         datos.fecha_apr_director = null;
+      }
+      if (dato_envio === 4) {
+        //Enviar Al Candidato
+        datos.fecha_envio_candidato = new Date();
+        const sendToken = generarTokenAprobacion(carta.id);
+        await enviarCorreo_para_Aprobacion(
+          `C${carta.Candidato.id}`,
+          carta.Candidato.correo,
+          carta.Candidato.nombre_completo,
+          sendToken
+        );
       }
       await carta.update(datos);
       res.json(carta);
@@ -160,26 +182,41 @@ const CartasOfertasController = {
 
   async aprobarCartaPorToken(req: Request, res: Response) {
     const { token } = req.params;
-    const { fecha_ingreso, horas_pactadas } = req.body;
+    const { fecha_ingreso, horas_pactadas, esDirector } = req.body;
 
     try {
       const { carta_id } = validarTokenAprobacion(token);
-      const carta = await CartaOferta.findByPk(carta_id);
+      const carta: any = await CartaOferta.findByPk(carta_id);
+
       if (!carta) {
-        res.status(404).json({ mensaje: "Carta no encontrada" });
-        return;
+        return res.status(404).json({ mensaje: "Carta no encontrada" });
       }
 
-      await carta.update({
-        estado: 3,
-        fecha_ingreso,
-        horas_pactadas,
-        fecha_apr_director: new Date(),
-      });
+      // Construcción base del objeto de actualización
+      const updateCO: Record<string, any> = esDirector
+        ? {
+            fecha_ingreso,
+            horas_pactadas,
+            fecha_apr_director: new Date(),
+          }
+        : {
+            fecha_apr_candidato: new Date(),
+          };
 
-      res.json({ mensaje: "Carta aprobada correctamente" });
+      // Si ya existe aprobación del otro rol, se cambia estado
+      const aprobacionContraria = esDirector
+        ? carta.fecha_apr_candidato
+        : carta.fecha_apr_director;
+
+      if (aprobacionContraria) {
+        updateCO.estado = 3;
+      }
+
+      await carta.update(updateCO);
+
+      return res.json({ mensaje: "Carta aprobada correctamente" });
     } catch (error) {
-      res.status(401).json({ mensaje: "Token inválido o expirado" });
+      return res.status(401).json({ mensaje: "Token inválido o expirado" });
     }
   },
 };

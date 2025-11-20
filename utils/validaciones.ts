@@ -67,19 +67,21 @@ export async function enviarCorreoRecuperacion(correo: string, token: string) {
 }
 
 export const enviarCorreo_para_Aprobacion = async (
-  CartaOferta: any,
+  director: string,
+  destinatario_correo: string,
+  destinatario_nombre: string,
   token: string
 ) => {
-  const enlace = `${process.env.FRONTEND_URL}/aprobar-carta?token=${token}`;
+  const enlace = `${process.env.FRONTEND_URL}/aprobar-carta?alt=${director}&token=${token}`;
 
   const transporter = await transport();
 
   await transporter.sendMail({
     from: '"SLEP Chinchorro" <no-reply@slepchinchorro.cl>',
-    to: CartaOferta.institucione.directore.correo,
+    to: destinatario_correo,
     subject: "Carta Oferta - Necesita su aprobación",
     html: `
-      <p>Estimada/o ${CartaOferta.institucione.directore.nombre},</p>
+      <p>Estimada/o ${destinatario_nombre},</p>
       <p>Se ha generado una carta oferta para su revisión y aprobación.</p>
       <p>NOTA: Este enlace estará disponible solo por 48 hrs. corridas a partir de la fecha de emisión de este correo.</p>
       <p><a href="${enlace}">Haga clic aquí para aprobar la carta</a></p>
