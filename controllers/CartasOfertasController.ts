@@ -45,6 +45,7 @@ const CartasOfertasController = {
         include: [
           { model: Cargo, include: [CategoriaCargo] },
           Jornada,
+          EstadoCartaOferta,
           {
             model: Candidato,
             include: [EstadoCivil, Nacionalidad],

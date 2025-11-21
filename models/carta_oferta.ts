@@ -61,6 +61,10 @@ const CartaOferta = db.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    created_at: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     tableName: "cartas_ofertas",
