@@ -258,7 +258,7 @@ export const agrupadasPorConvocatoriaEstadoAsc = async (
           ],
         },
       ],
-      order: [["estado_id", "ASC"]],
+      order: [["id", "ASC"]],
     });
 
     res.json(convocatorias);
