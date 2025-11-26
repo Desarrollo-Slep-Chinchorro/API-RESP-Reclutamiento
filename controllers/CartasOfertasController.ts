@@ -40,6 +40,7 @@ const CartasOfertasController = {
   },
 
   async obtenerPorId(req: Request, res: Response) {
+    //
     try {
       const carta = await CartaOferta.findByPk(req.params.id, {
         include: [
