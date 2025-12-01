@@ -70,7 +70,8 @@ export const enviarCorreo_para_Aprobacion = async (
   director: string,
   destinatario_correo: string,
   destinatario_nombre: string,
-  token: string
+  token: string,
+  codigo: number
 ) => {
   const enlace = `${process.env.FRONTEND_URL}/aprobar-carta?alt=${director}&token=${token}`;
 
@@ -81,10 +82,45 @@ export const enviarCorreo_para_Aprobacion = async (
     to: destinatario_correo,
     subject: "Carta Oferta - Necesita su aprobación",
     html: `
-      <p>Estimada/o ${destinatario_nombre},</p>
-      <p>Se ha generado una carta oferta para su revisión y aprobación.</p>
-      <p>NOTA: Este enlace estará disponible solo por 48 hrs. corridas a partir de la fecha de emisión de este correo.</p>
-      <p><a href="${enlace}">Haga clic aquí para aprobar la carta</a></p>
+     <div style="width:100%; background:#f4f6f8; padding:20px 0;">
+    <div style="max-width:600px; margin:0 auto; background:#ffffff; border:1px solid #e5e7eb;">
+      
+      <!-- Encabezado -->
+      <div style="background:#0b4ea2; color:#ffffff; font-size:18px; font-weight:bold; padding:16px 20px;">
+        Carta oferta – Revisión y aprobación
+      </div>
+
+      <!-- Contenido -->
+      <div style="padding:20px; color:#111827; font-size:14px; line-height:1.6;">
+        <p>Estimado/a <strong>${destinatario_nombre}</strong>,</p>
+        <p>Se ha generado una carta oferta que requiere su revisión, confirmar la fecha de ingreso y su aprobación.</p>
+
+        <!-- Código -->
+        <div style="color:#374151; font-weight:bold; margin:16px 0 6px;">Código de aprobación:</div>
+        <div style="font-family:'Courier New', monospace; font-size:22px; letter-spacing:4px; background:#f3f4f6; border:1px solid #d1d5db; border-radius:6px; padding:14px 18px; display:inline-block;">
+          ${codigo}
+        </div>
+
+        <!-- Nota -->
+        <div style="margin-top:16px; padding:12px 14px; background:#f9fafb; border-left:4px solid #0b4ea2; color:#374151; font-size:13px;">
+          <strong>Nota:</strong> Este enlace estará disponible únicamente durante <strong>48 horas corridas</strong> a partir de la fecha de emisión de este correo.
+        </div>
+
+        <!-- Botón -->
+        <div style="margin:22px 0;">
+          <a href="${enlace}" target="_blank" rel="noopener" 
+             style="display:inline-block; background:#0b4ea2; color:#ffffff; text-decoration:none; padding:12px 18px; border-radius:6px; font-weight:bold;">
+            Haga clic aquí para aprobar la carta
+          </a>
+        </div>
+      </div>
+
+      <!-- Pie -->
+      <div style="padding:14px 20px; font-size:12px; color:#6b7280; border-top:1px solid #e5e7eb;">
+        Sistema Institucional SDGP – SLEP Chinchorro
+      </div>
+    </div>
+  </div>
     `,
   });
 
@@ -109,4 +145,17 @@ export async function enviarCorreoRecuperacionResend(
       <p>Este enlace expirará en 15 minutos.</p>
     `,
   });
+}
+
+export function generateRandomNumericCode(length: number = 6): string {
+  if (length <= 0) {
+    throw new Error("La longitud debe ser mayor a 0");
+  }
+
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const digit = Math.floor(Math.random() * 10); // número entre 0 y 9
+    result += digit.toString();
+  }
+  return result;
 }

@@ -11,12 +11,14 @@ import {
   enviarCorreo_para_Aprobacion,
   generarTokenAprobacion,
   validarTokenAprobacion,
+  generateRandomNumericCode,
 } from "../utils/validaciones";
 import EstadoCartaOferta from "../models/estado_cartaOferta";
 import EstadoCivil from "../models/estado_civil";
 import Nacionalidad from "../models/nacionalidad";
 import Ciudad from "../models/ciudad";
 import CategoriaCargo from "../models/categoria_cargos";
+import { Op } from "sequelize";
 
 const CartasOfertasController = {
   async listar(req: Request, res: Response) {
@@ -25,9 +27,12 @@ const CartasOfertasController = {
 
       const where: any = {};
       if (est) {
-        where.estado = est;
-      }
+        const estados = String(est)
+          .split(",")
+          .map((e) => Number(e.trim()));
 
+        where.estado = { [Op.in]: estados };
+      }
       const cartas = await CartaOferta.findAll({
         where,
         include: [Candidato, Institucion, Cargo, EstadoCartaOferta],
@@ -100,14 +105,17 @@ const CartasOfertasController = {
       }
       if (dato_envio === 1) {
         //Enviar Al director
+        const codigo = generateRandomNumericCode(6);
         datos.fecha_envio_dir = new Date();
         datos.estado = 2;
+        datos.cod_director = codigo;
         const sendToken = generarTokenAprobacion(carta.id);
         await enviarCorreo_para_Aprobacion(
           "D1r",
           carta.institucione.directore.correo,
           carta.institucione.directore.nombre,
-          sendToken
+          sendToken,
+          Number(codigo)
         );
       }
       if (dato_envio === 2) {
@@ -122,14 +130,16 @@ const CartasOfertasController = {
         datos.fecha_apr_director = null;
       }
       if (dato_envio === 4) {
-        //Enviar Al Candidato
-        datos.fecha_envio_candidato = new Date();
+        const codigo = generateRandomNumericCode(6);
         const sendToken = generarTokenAprobacion(carta.id);
+        datos.cod_candidato = codigo;
+        datos.fecha_envio_candidato = new Date();
         await enviarCorreo_para_Aprobacion(
           `C${carta.Candidato.id}`,
           carta.Candidato.correo,
           carta.Candidato.nombre_completo,
-          sendToken
+          sendToken,
+          Number(codigo)
         );
       }
       await carta.update(datos);
@@ -184,7 +194,7 @@ const CartasOfertasController = {
 
   async aprobarCartaPorToken(req: Request, res: Response) {
     const { token } = req.params;
-    const { fecha_ingreso, horas_pactadas, esDirector } = req.body;
+    const { fecha_ingreso, horas_pactadas, esDirector, codigo } = req.body;
 
     try {
       const { carta_id } = validarTokenAprobacion(token);
@@ -192,6 +202,23 @@ const CartasOfertasController = {
 
       if (!carta) {
         return res.status(404).json({ mensaje: "Carta no encontrada" });
+      }
+
+      const codigoEsperado = esDirector
+        ? carta.cod_director
+        : carta.cod_candidato;
+
+      console.log(
+        "cod_director:",
+        carta.cod_director,
+        typeof carta.cod_director,
+        carta.cod_director.length
+      );
+      console.log("codigo:", codigo);
+
+      // Compara codigo
+      if (codigoEsperado !== Number(codigo)) {
+        return res.status(404).json({ mensaje: "Código inválido" });
       }
 
       // Construcción base del objeto de actualización
@@ -216,7 +243,10 @@ const CartasOfertasController = {
 
       await carta.update(updateCO);
 
-      return res.json({ mensaje: "Carta aprobada correctamente" });
+      return res.json({
+        mensaje: "Carta aprobada correctamente",
+        fechaAprobacion: new Date(),
+      });
     } catch (error) {
       return res.status(401).json({ mensaje: "Token inválido o expirado" });
     }

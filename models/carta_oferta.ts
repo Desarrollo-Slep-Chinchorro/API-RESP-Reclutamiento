@@ -66,6 +66,14 @@ const CartaOferta = db.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
+    cod_director: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    cod_candidato: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     tableName: "cartas_ofertas",
