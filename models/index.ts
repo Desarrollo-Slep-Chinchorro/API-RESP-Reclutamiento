@@ -28,6 +28,29 @@ import tipoVacante from "./tipoVacante";
 import CartaOferta from "./carta_oferta";
 import Director from "./director";
 import EstadoCartaOferta from "./estado_cartaOferta";
+import Solicitud from "./solicitud";
+import Reemplazo from "./reemplazo";
+import DistribucionHoraria from "./distribucion_horaria";
+import TotalesDistribucion from "./totales_distribucion";
+
+// Relaciones
+Solicitud.hasOne(Reemplazo, {
+  foreignKey: "id_solicitud",
+  onDelete: "CASCADE",
+});
+Reemplazo.belongsTo(Solicitud, { foreignKey: "id_solicitud" });
+
+Solicitud.hasMany(DistribucionHoraria, {
+  foreignKey: "id_solicitud",
+  onDelete: "CASCADE",
+});
+DistribucionHoraria.belongsTo(Solicitud, { foreignKey: "id_solicitud" });
+
+Solicitud.hasOne(TotalesDistribucion, {
+  foreignKey: "id_solicitud",
+  onDelete: "CASCADE",
+});
+TotalesDistribucion.belongsTo(Solicitud, { foreignKey: "id_solicitud" });
 
 // Relaciones candidatos
 Candidato.belongsTo(TituloProfesional, { foreignKey: "titulo_profesional_id" });

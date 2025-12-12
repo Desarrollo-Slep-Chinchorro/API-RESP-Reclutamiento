@@ -263,7 +263,7 @@ export const agrupadasPorConvocatoriaEstadoAsc = async (
 
     res.json(convocatorias);
   } catch (error) {
-    console.error("❌ ERROR:", error);
+    console.error("ERROR:", error);
     res.status(500).json({
       error: "Error al obtener convocatorias",
       detalle: error instanceof Error ? error.message : error,
