@@ -38,18 +38,21 @@ Solicitud.hasOne(Reemplazo, {
   foreignKey: "id_solicitud",
   onDelete: "CASCADE",
 });
+
 Reemplazo.belongsTo(Solicitud, { foreignKey: "id_solicitud" });
 
 Solicitud.hasMany(DistribucionHoraria, {
   foreignKey: "id_solicitud",
   onDelete: "CASCADE",
 });
+
 DistribucionHoraria.belongsTo(Solicitud, { foreignKey: "id_solicitud" });
 
 Solicitud.hasOne(TotalesDistribucion, {
   foreignKey: "id_solicitud",
   onDelete: "CASCADE",
 });
+
 TotalesDistribucion.belongsTo(Solicitud, { foreignKey: "id_solicitud" });
 
 // Relaciones candidatos
@@ -59,13 +62,18 @@ Candidato.belongsTo(Nacionalidad, { foreignKey: "nacionalidad_id" });
 Candidato.belongsTo(EstadoCivil, { foreignKey: "estado_civil_id" });
 Candidato.belongsTo(Comuna, { foreignKey: "comuna_id" });
 Candidato.belongsTo(nivelEducacion, { foreignKey: "nivel_educacion_id" });
+Candidato.hasMany(Comentario, { foreignKey: "candidato_id" });
+Candidato.belongsToMany(Cargo, {
+  through: CandidatosCargos,
+  foreignKey: "candidato_id",
+  otherKey: "cargo_id",
+});
 // Comentarios
 Comentario.belongsTo(Candidato, { foreignKey: "candidato_id" });
 Comentario.belongsTo(Candidato, {
   foreignKey: "creador_id",
   as: "responsable",
 });
-Candidato.hasMany(Comentario, { foreignKey: "candidato_id" });
 // Documentos
 DocumentoCandidato.belongsTo(Documento, { foreignKey: "documento_id" });
 DocumentoCandidato.belongsTo(Candidato, { foreignKey: "candidato_id" });
@@ -73,12 +81,6 @@ Candidato.hasMany(DocumentoCandidato, { foreignKey: "candidato_id" });
 // Roles cargos
 Cargo.belongsTo(CategoriaCargo, { foreignKey: "tipo_cargo_id" });
 CategoriaCargo.hasMany(Cargo, { foreignKey: "tipo_cargo_id" });
-
-Candidato.belongsToMany(Cargo, {
-  through: CandidatosCargos,
-  foreignKey: "candidato_id",
-  otherKey: "cargo_id",
-});
 Cargo.belongsToMany(Candidato, {
   through: CandidatosCargos,
   foreignKey: "cargo_id",
@@ -123,7 +125,6 @@ Jornada.belongsToMany(Candidato, {
   foreignKey: "jornada_id",
   otherKey: "candidato_id",
 });
-
 Candidato.belongsToMany(Ciudad, {
   through: CandidatosCiudades,
   foreignKey: "candidato_id",
@@ -134,7 +135,6 @@ Ciudad.belongsToMany(Candidato, {
   foreignKey: "ciudades_id",
   otherKey: "candidato_id",
 });
-
 Candidato.belongsToMany(Modalidades, {
   through: CandidatosModalidades,
   foreignKey: "candidato_id",
@@ -145,27 +145,21 @@ Ciudad.belongsToMany(Candidato, {
   foreignKey: "modalidad_horaria_id",
   otherKey: "candidato_id",
 });
-
-// Relación directa con tabla intermedia para incluir registros como "cargos"
 Candidato.hasMany(CandidatosCargos, {
   foreignKey: "candidato_id",
 });
-
 Candidato.hasMany(CandidatosCiudades, {
   foreignKey: "candidato_id",
 });
-
 Candidato.hasMany(CandidatosJornadas, {
   foreignKey: "candidato_id",
 });
-
 Candidato.hasMany(CandidatosModalidades, {
   foreignKey: "candidato_id",
 });
 
 Institucion.belongsTo(Director, { foreignKey: "director_id" });
 Institucion.belongsTo(Ciudad, { foreignKey: "ciudad_id" });
-
 CartaOferta.belongsTo(Candidato, { foreignKey: "candidato_id" });
 CartaOferta.belongsTo(Cargo, { foreignKey: "cargo_id" });
 CartaOferta.belongsTo(Convocatoria, { foreignKey: "convocatoria_id" });
