@@ -62,6 +62,10 @@ const Convocatoria = db.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    publicada: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
   },
   {
     modelName: "Convocatoria",
